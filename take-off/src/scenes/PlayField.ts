@@ -15,9 +15,23 @@ export class PlayField extends Scene {
         var room: Room = this.data.get("GlobalConfig").room; 
         room.onStateChange((state) => {
             this.data.set("state", state);
+            this.data.set('loaded', true);
         });
     }
     update() {
-        console.log('state',this.data.get("state"));
+        if(!this.data.get('loaded')) {
+            return;
+        }
+        this._drawGroundTiles(this.data.get("state"))
+    }
+
+    _drawGroundTiles(state: any) {
+        state.mapSpecification.forEach((tile:string ,coord:string)=>{
+            const [x,y] = coord.split('.');
+            console.log(x, y, tile);
+        });
+    }
+    _drawPlanes() {
+
     }
 }
