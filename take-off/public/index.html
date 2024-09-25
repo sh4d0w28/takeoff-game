@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css">
+    <title>Phaser - Template</title>
+</head>
+
+<body>
+    <div id="app">
+        <div id="game-container"></div>
+    </div>
+    <script type="module" src="./bundle.min.js"></script>
+</body>
+</html>
+
+<!---
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
+    <script src="https://unpkg.com/colyseus.js@^0.15.17/dist/colyseus.js"></script>
+</head>
+<body>
+    <script>
+    let scene = null;
+    let client = new Colyseus.Client("ws://localhost:2567");
+    let persistent = {}
+   
+    class Lobby extends Phaser.Scene {
+        constructor(config) {
+            super({...config, key: "Lobby"});
+            persistent.lobby = this
+            persistent.lobby.takeoff_rooms = {}
+            persistent.lobby.rectangles = []
+        }
+        create() {
+            this.add.text(100, 100, 'LBY!', { fill: '#0f0' });
+
+            this.add.text(100,150, 'CREATE', {fill: '#f00'})
+                .setInteractive()
+                .on('pointerdown', () => this._createRoom() );
+
+            // event processing
+            client.joinOrCreate("takeoff_lobby").then((lobby_room) => {
+                
+                persistent.lobby.lobby_room = lobby_room;
+                lobby_room.onMessage("rooms", (rooms) => { persistent.lobby._rooms(rooms); } );
+                lobby_room.onMessage("+", ([roomId, room]) => { persistent.lobby._plusroom(roomId, room); });
+                lobby_room.onMessage("-", (roomId) => { persistent.lobby._minusroom(roomId); });
+                lobby_room.onMessage("__playground_message_types", (e) => {console.log(e);})
+                lobby_room.onLeave(() => { persistent.lobby._leave(); });  
+
+                console.log("Joined lobby room!");
+            })
+            .catch((e) => {
+                console.error("Error", e);
+            });
+        }
+        update(time, delta) {
+            ;
+        }
+        _createRoom(){
+            client.create("takeoff_room", { 
+                width: 2,
+                height: 2, 
+                map: "┌┐└┘",
+                startPoints:[
+                    {x:0,y:0,direction:"UP"}
+                ]
+            })
+            .then((room) => {
+                room.onMessage("state", function (message) {});
+                room.onStateChange((state) => {
+                    scene = state;
+                });
+            })
+            .catch((e) => {
+                console.log("JOIN ERROR", e);
+            });
+        }
+        _plusroom(roomId, room) {
+            console.log("[lobby] Room add:", roomId, room)
+            persistent.lobby.takeoff_rooms[roomId] = room;
+            persistent.lobby._redraw_rooms()
+        }
+        _minusroom(roomId) {
+            console.log("[lobby] Room removed", roomId);
+            persistent.lobby.takeoff_rooms[roomId] = null;
+            persistent.lobby._redraw_rooms()
+        }
+        _rooms(rooms) {
+            console.log("[lobby] Rooms received:", rooms);
+            persistent.lobby._redraw_rooms()
+        }
+        _leave() {console.log('[lobby] Leaving lobby')}
+
+        _redraw_rooms() {
+
+            if (this.graphics) {
+                this.graphics.clear();
+            } else {
+                this.graphics = this.add.graphics();
+            }
+
+            const roomHeight = 50;
+            const roomPadding = 10;
+            var index = 0;
+
+            Object.entries(persistent.lobby.takeoff_rooms).forEach(([roomId,room]) => {
+
+                const yPosition = index++ * (roomHeight + roomPadding) + 100; // Adjust vertical position
+                // Create rounded rectangle for the room
+                const roomRectangle = this.add.rectangle(400, yPosition, 300, roomHeight, 0x007bff, 1)
+                    .setOrigin(0.5)
+                    .setInteractive();
+
+                persistent.lobby.rectangles.push(roomRectangle);                
+
+                // Add room name and user count text
+                const text = `${room.name} (${room.users} users)`;
+                this.add.text(400, yPosition, text, { fontSize: '20px', fill: '#ffffff' })
+                    .setOrigin(0.5);
+
+                // Add interactive listener for room selection
+                roomRectangle.on('pointerdown', () => {
+                    console.log(`Selected: ${room.name}`);
+                    // Handle room selection logic here
+                });
+
+                // Optional: Change color on hover
+                roomRectangle.on('pointerover', () => {
+                    roomRectangle.setFillStyle(0x0056b3);
+                });
+
+                roomRectangle.on('pointerout', () => {
+                    roomRectangle.setFillStyle(0x007bff);
+                });          
+            });
+        }
+    
+    }
+
+    class Title extends Phaser.Scene {
+        constructor(config) {
+            super({...config, key: "Title"});
+        }
+        create ()
+        {
+            const clickButton = this.add.text(100, 100, 'Start!', { fill: '#0f0' })
+            .setInteractive()
+            .on('pointerdown', () => this.switchToLobby() );
+        }
+        switchToLobby() {
+            console.log('switch to lobby');
+            this.scene.switch('Lobby');
+        }
+    }
+
+    const config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        scene: [Title, Lobby],
+    };
+
+    const game = new Phaser.Game(config);
+    </script>
+
+</body>
+</html>
+-->
