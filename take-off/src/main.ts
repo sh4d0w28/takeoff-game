@@ -1,6 +1,7 @@
 import { Title } from './scenes/Title.ts'; 
 import { Lobby } from './scenes/Lobby.ts';
-import { AUTO, Scale,Types } from 'phaser';
+import {PlayField} from './scenes/PlayField.ts';
+import { AUTO, Game, Scale,Types } from 'phaser';
 import * as Colyseus from "colyseus.js";
 import GlobalConfig from './GlobalConfig.ts';
 
@@ -17,7 +18,7 @@ const config: Types.Core.GameConfig = {
         autoCenter: Scale.CENTER_BOTH
     },
     scene: [
-        Title, Lobby
+        Title, Lobby, PlayField
     ]
 };
 

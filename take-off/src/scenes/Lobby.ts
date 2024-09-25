@@ -9,12 +9,11 @@ export class Lobby extends Scene {
     }
 
     init(data: GlobalConfig) {
-        this.data.set('client', data.colyseus);
+        this.data.set('GlobalConfig', data);
     }
 
     create() {
         this.data.set('takeoff_rooms', {});
-        this.data.set('rectangles', []);
         
         this.add.text(100, 100, 'LBY!', { color: '#0f0' });
 
@@ -23,7 +22,8 @@ export class Lobby extends Scene {
             .on('pointerdown', () => this._createRoom() );
 
         // event processing
-        var client:Client = this.data.get("client");
+        var client:Client = this.data.get("GlobalConfig").colyseus;
+
         client.joinOrCreate("takeoff_lobby").then((lobby_room) => {
         
             lobby_room.onMessage("rooms", (rooms) => { this._rooms(rooms); } );
@@ -37,11 +37,9 @@ export class Lobby extends Scene {
             console.error("Error", e);
         });
     }
-    // update(time, delta) {
-    //     console.log(time,delta);
-    // }
+
     _createRoom(){
-        var client:Client = this.data.get('client')
+        var client:Client = this.data.get("GlobalConfig").colyseus;
         client.create("takeoff_room", { 
             width: 2,
             height: 2, 
@@ -93,6 +91,7 @@ export class Lobby extends Scene {
             // Add interactive listener for room selection
             roomRectangle.on('pointerdown', () => {
                 console.log(`Selected: ${room.roomId}`);
+                this._joinGame(room.roomId)
                 // Handle room selection logic here
             });
 
@@ -107,4 +106,11 @@ export class Lobby extends Scene {
         })
     }
 
+    _joinGame(roomId: string) {
+        var config: GlobalConfig = this.data.get('GlobalConfig');
+        config.colyseus.joinById(roomId, {}).then((room) => {
+            config.room = room;
+            this.scene.switch('Game', config);
+        });
+    }
 }

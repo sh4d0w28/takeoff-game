@@ -1,5 +1,6 @@
-import { Client } from "colyseus.js";
+import { Client, Room } from "colyseus.js";
 
 export default class GlobalConfig {
-    colyseus: Client
+    colyseus: Client;
+    room?: Room
 }
