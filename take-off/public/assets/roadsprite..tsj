@@ -1,0 +1,15 @@
+{ "columns":3,
+ "image":"..\/..\/..\/tiled\/assets\/roadsprite.bmp",
+ "imageheight":98,
+ "imagewidth":98,
+ "margin":0,
+ "name":"roadsprite",
+ "objectalignment":"topleft",
+ "spacing":1,
+ "tilecount":9,
+ "tiledversion":"1.11.0",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":"1.10"
+}
