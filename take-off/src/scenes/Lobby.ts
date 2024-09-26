@@ -45,7 +45,7 @@ export class Lobby extends Scene {
             height: 2, 
             map: "┌┐└┘",
             startPoints:[
-                {x:0,y:0,direction:"UP"}
+                {x:0,y:0,direction:"RIGHT"}
             ]
         });
     }

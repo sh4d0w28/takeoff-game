@@ -108,8 +108,7 @@ export class AirFieldState extends Schema {
             }
 
             var allowedDirections = FieldMapUtil.getAllowedDirections(
-                currentFieldContent,
-                FieldMapUtil.getOppositeDirection(plane.currentDirection)
+                currentFieldContent, plane.currentDirection
             );
 
             if (allowedDirections.includes(plane.userCommand)) {

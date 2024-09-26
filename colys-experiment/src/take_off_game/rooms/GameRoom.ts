@@ -6,7 +6,7 @@ import { PlayerJoinOption } from "../classes/PlayerJoinOption"
 
 export class GameRoom extends Room<AirFieldState> {
     maxClients = 6;
-  
+    
     public delayedInterval!: Delayed;
   
     onCreate (options: AirFieldStateOption) {    
@@ -15,7 +15,7 @@ export class GameRoom extends Room<AirFieldState> {
   
       this.delayedInterval = this.clock.setInterval(() => {
         this.state.advance(this);
-      }, 50);
+      }, 100);
     }
   
     onJoin (client: Client, options: PlayerJoinOption) {

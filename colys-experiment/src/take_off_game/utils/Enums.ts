@@ -6,8 +6,8 @@ export enum PlaneStateEnum {
 }
 
 export enum DirectionEnum {
-    UP = 'u',
-    DOWN = 'd',
-    RIGHT = 'r',
-    LEFT = 'l'
+    UP = 'UP',
+    DOWN = 'DOWN',
+    RIGHT = 'RIGHT',
+    LEFT = 'LEFT'
 }

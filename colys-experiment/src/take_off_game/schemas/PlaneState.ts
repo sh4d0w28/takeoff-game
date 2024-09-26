@@ -63,17 +63,17 @@ export class PlaneState extends Schema {
             // switch to next cell ... 
             this.subMove = 0;
             // ... and depend on which direction we face, change coordinates
-            switch(this.desiredDirection) {
-                case DirectionEnum.UP:
+            switch(this.desiredDirection.valueOf()) {
+                case DirectionEnum.UP.valueOf():
                     this.y --;
                     break;
-                case DirectionEnum.DOWN:
+                case DirectionEnum.DOWN.valueOf():
                     this.y ++;
                     break;
-                case DirectionEnum.LEFT:
+                case DirectionEnum.LEFT.valueOf():
                     this.x --;
                     break;
-                case DirectionEnum.RIGHT:
+                case DirectionEnum.RIGHT.valueOf():
                     this.x ++;
                     break;
                 default:

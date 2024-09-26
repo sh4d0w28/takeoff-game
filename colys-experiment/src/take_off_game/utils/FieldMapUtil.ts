@@ -42,52 +42,65 @@ export default abstract class FieldMapUtil {
       return "*" == c;       
     }
 
-    public static getAllowedDirections(c: string, excluded?: string) {
+    public static getAllowedDirections(c: string, currentDirection: DirectionEnum) {
       var allowed: DirectionEnum[] = [];
       switch(c) {
         case '─':
         case '═':
           allowed = [DirectionEnum.RIGHT,DirectionEnum.LEFT];
+          break;
         case '│':
         case '║':
           allowed = [DirectionEnum.UP,DirectionEnum.DOWN];
+          break;
         case '┐':
         case '╗':
           allowed = [DirectionEnum.LEFT,DirectionEnum.DOWN];
+          break;
         case '┘':
         case '╝':
           allowed = [DirectionEnum.LEFT,DirectionEnum.UP];
+          break;
         case '└':
         case '╚':
           allowed = [DirectionEnum.RIGHT,DirectionEnum.UP];
+          break;
         case '┌':
         case '╔':
           allowed = [DirectionEnum.RIGHT,DirectionEnum.DOWN];
+          break;
         case '┤':
           allowed = [DirectionEnum.UP,DirectionEnum.LEFT,DirectionEnum.DOWN];
+          break;
         case '┴':
           allowed = [DirectionEnum.UP,DirectionEnum.LEFT,DirectionEnum.RIGHT];
+          break;
         case '├':
           allowed = [DirectionEnum.UP,DirectionEnum.RIGHT,DirectionEnum.DOWN];
+          break;
         case '┬':
           allowed = [DirectionEnum.DOWN,DirectionEnum.LEFT,DirectionEnum.RIGHT];
+          break;
         case '┼':
           allowed = [DirectionEnum.UP,DirectionEnum.RIGHT,DirectionEnum.LEFT,DirectionEnum.DOWN];
+          break
         default: 
-        allowed = [];
+          allowed = [];
+          break;
       }
-      if(excluded) {
-        return allowed.filter(o => o != excluded);
-      }
+
+      var oppositeDir = FieldMapUtil.getOppositeDirection(currentDirection);
+      allowed.filter(o => o.valueOf() != oppositeDir.valueOf());
+      
       return allowed;
     }
 
     public static getOppositeDirection(dir: DirectionEnum) {
-      switch(dir) {
-          case DirectionEnum.UP: return DirectionEnum.DOWN;
-          case DirectionEnum.DOWN: return DirectionEnum.UP;
-          case DirectionEnum.LEFT: return DirectionEnum.RIGHT;
-          case DirectionEnum.RIGHT: return DirectionEnum.LEFT;
+      switch(dir.valueOf()) {
+          case DirectionEnum.UP.valueOf(): return DirectionEnum.DOWN;
+          case DirectionEnum.DOWN.valueOf(): return DirectionEnum.UP;
+          case DirectionEnum.LEFT.valueOf(): return DirectionEnum.RIGHT;
+          case DirectionEnum.RIGHT.valueOf(): return DirectionEnum.LEFT;
       }
     }
 }
