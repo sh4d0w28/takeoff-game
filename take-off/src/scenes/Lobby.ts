@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import { Client } from 'colyseus.js';
+import { Client, Room } from 'colyseus.js';
+import { DirectionEnum } from '../../../common/Enums'
 
 export class Lobby extends Scene {   
 
@@ -17,7 +18,7 @@ export class Lobby extends Scene {
         
         this.add.text(100, 100, 'LBY!', { color: '#0f0' });
 
-        this.add.text(100,150, 'CREATE', { color: '#f00'})
+        this.add.text(100,150, 'New Room', { color: '#f00'})
             .setInteractive()
             .on('pointerdown', () => this._createRoom() );
 
@@ -40,13 +41,19 @@ export class Lobby extends Scene {
 
     _createRoom(){
         var client:Client = this.data.get("GlobalConfig").colyseus;
-        client.create("takeoff_room", { 
+        client.joinOrCreate("takeoff_room", { 
             width: 2,
             height: 2, 
             map: "┌┐└┘",
             startPoints:[
-                {x:0,y:0,direction:"RIGHT"}
-            ]
+                {x:0,y:0,direction: DirectionEnum.RIGHT }
+            ],
+            externalId: "extId",
+            name: "uuname"
+        }).then((room: Room) => {
+            var config: GlobalConfig = this.data.get('GlobalConfig');
+            config.room = room;
+            this.scene.switch('Game', config);
         });
     }
     _plusroom(roomId: any, room: any) {

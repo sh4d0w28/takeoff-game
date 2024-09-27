@@ -1,4 +1,4 @@
-import { DirectionEnum } from "./Enums";
+import { DirectionEnum } from "../../../../common/Enums";
 
 export default abstract class FieldMapUtil {
 
@@ -42,8 +42,8 @@ export default abstract class FieldMapUtil {
       return "*" == c;       
     }
 
-    public static getAllowedDirections(c: string, currentDirection: DirectionEnum) {
-      var allowed: DirectionEnum[] = [];
+    public static getAllowedDirections(c: string, currentDirection: string) {
+      var allowed: string[] = [];
       switch(c) {
         case '─':
         case '═':
@@ -90,17 +90,17 @@ export default abstract class FieldMapUtil {
       }
 
       var oppositeDir = FieldMapUtil.getOppositeDirection(currentDirection);
-      allowed.filter(o => o.valueOf() != oppositeDir.valueOf());
+      allowed.filter(o => o != oppositeDir);
       
       return allowed;
     }
 
-    public static getOppositeDirection(dir: DirectionEnum) {
-      switch(dir.valueOf()) {
-          case DirectionEnum.UP.valueOf(): return DirectionEnum.DOWN;
-          case DirectionEnum.DOWN.valueOf(): return DirectionEnum.UP;
-          case DirectionEnum.LEFT.valueOf(): return DirectionEnum.RIGHT;
-          case DirectionEnum.RIGHT.valueOf(): return DirectionEnum.LEFT;
+    public static getOppositeDirection(dir: string) {
+      switch(dir) {
+          case DirectionEnum.UP: return DirectionEnum.DOWN;
+          case DirectionEnum.DOWN: return DirectionEnum.UP;
+          case DirectionEnum.LEFT: return DirectionEnum.RIGHT;
+          case DirectionEnum.RIGHT: return DirectionEnum.LEFT;
       }
     }
 }

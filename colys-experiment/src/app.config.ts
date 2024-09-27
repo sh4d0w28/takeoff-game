@@ -7,6 +7,7 @@ import { playground } from "@colyseus/playground";
  */
 import { GameRoom } from "./take_off_game/rooms/GameRoom.js";
 import { LobbyRoom } from "colyseus";
+import { PlaneStateEnum } from "../../common/Enums.js";
 
 export default config({
 
@@ -16,7 +17,6 @@ export default config({
          */
         gameServer.define('takeoff_room', GameRoom).enableRealtimeListing();
         gameServer.define("takeoff_lobby", LobbyRoom).enableRealtimeListing();
-
     },
 
     initializeExpress: (app) => {

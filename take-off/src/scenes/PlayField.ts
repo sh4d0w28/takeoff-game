@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Room } from 'colyseus.js';
+import { DirectionEnum } from '../../../common/Enums';
 
 export class PlayField extends Scene {   
 
@@ -51,10 +52,25 @@ export class PlayField extends Scene {
         }
         var state = this.data.get("state");
 
-        this._drawGroundTiles(state);
+        //this._drawGroundTiles(state);
         this._drawPlanes(state);
+        this._drawDebug(state);
 
     }
+    _drawDebug(state: any) {
+        var planeSpec = state.planes.getByIndex(0);
+        var stateString = "[" +  planeSpec.x + " " + planeSpec.y + "]"
+                + " (+"+ ("" + Math.round(planeSpec.subMove * 100)) + ")" 
+                + " is " + planeSpec.state + " from " + planeSpec.currentDirection + " to " + planeSpec.desiredDirection;  
+        
+        var txtc: Phaser.GameObjects.Text = this.data.get('txtc');
+        if(!txtc) {
+            txtc = this.add.text(5,5, "");
+            this.data.set('txtc', txtc);
+        }
+        txtc.text = stateString
+    }
+
     _drawPlanes(state: any) {
         var fieldX = 400 - (state.columns * this.tsize / 2) 
         var fieldY = 100 - (state.rows * this.tsize / 2)
@@ -64,7 +80,7 @@ export class PlayField extends Scene {
         }
         state.planes.entries().forEach(([sessionId,planeSpec]:any)=>{
             if (!this.data.get('planes')[sessionId]) {
-                this.data.get('planes')[sessionId] = this.add.image(-2000,-2000,"planesSpriteSheet", 0);
+                this.data.get('planes')[sessionId] = this.add.image(-32,-32,"planesSpriteSheet", 0).setVisible(false);
             }
            var psprite: Phaser.GameObjects.Image = this.data.get('planes')[sessionId];
            this.__drawSinglePlane(fieldX, fieldY, planeSpec, psprite);
@@ -74,58 +90,58 @@ export class PlayField extends Scene {
         var subModX = 0;
         var subModY = 0;
         var angle = 0;
-        if(planeSpec.currentDirection == 'RIGHT' && planeSpec.desiredDirection == 'RIGHT') {
+        if(planeSpec.currentDirection == DirectionEnum.RIGHT && planeSpec.desiredDirection == DirectionEnum.RIGHT) {
             subModX = -0.5 + planeSpec.subMove;
             subModY = 0;
             angle = 90;
-        } else if(planeSpec.currentDirection == 'LEFT' && planeSpec.desiredDirection == 'LEFT') {
+        } else if(planeSpec.currentDirection == DirectionEnum.LEFT && planeSpec.desiredDirection == DirectionEnum.LEFT) {
             subModX = 0.5 - planeSpec.subMove;
             subModY = 0;
             angle = 270;
-        } else if(planeSpec.currentDirection == 'UP' && planeSpec.desiredDirection == 'UP') {
-            subModX = 0;
+        } else if(planeSpec.currentDirection == DirectionEnum.UP && planeSpec.desiredDirection == DirectionEnum.UP) {
+            subModX = 0; 
             subModY = 0.5 - planeSpec.subMove;
             angle = 0;
-        } else if(planeSpec.currentDirection == 'DOWN' && planeSpec.desiredDirection == 'DOWN') {
+        } else if(planeSpec.currentDirection == DirectionEnum.DOWN && planeSpec.desiredDirection == DirectionEnum.DOWN) {
             subModX = 0;
             subModY = -0.5 + planeSpec.subMove;
             angle = 180; 
-        } else if ( planeSpec.currentDirection == 'RIGHT' && planeSpec.desiredDirection == 'DOWN') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.RIGHT && planeSpec.desiredDirection == DirectionEnum.DOWN) {
             var a = 90 * (planeSpec.subMove);     
             subModX = -0.5 + 0.5 * Math.cos((270 + a) * Math.PI/180);
             subModY = 0.5 + 0.5 * Math.sin((270 + a) * Math.PI/180);
             angle = 90 + a;
-        } else if ( planeSpec.currentDirection == 'DOWN' && planeSpec.desiredDirection == 'LEFT') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.DOWN && planeSpec.desiredDirection == DirectionEnum.LEFT) {
             var a = 90 * (planeSpec.subMove);     
             subModX = -0.5 + 0.5 * Math.cos((360 + a) * Math.PI/180);
             subModY = -0.5 + 0.5 * Math.sin((360 + a) * Math.PI/180);
             angle = 180 + a;
-        } else if ( planeSpec.currentDirection == 'LEFT' && planeSpec.desiredDirection == 'UP') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.LEFT && planeSpec.desiredDirection == DirectionEnum.UP) {
             var a = 90 * (planeSpec.subMove);     
             subModX = 0.5 + 0.5 * Math.cos((90 + a) * Math.PI/180);
             subModY = -0.5 + 0.5 * Math.sin((90 + a) * Math.PI/180);
             angle = 270 + a;
-        } else if ( planeSpec.currentDirection == 'UP' && planeSpec.desiredDirection == 'RIGHT') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.UP && planeSpec.desiredDirection == DirectionEnum.RIGHT) {
             var a = 90 * (planeSpec.subMove);     
             subModX = 0.5 + 0.5 * Math.cos((180 + a) * Math.PI/180);
             subModY = 0.5 + 0.5 * Math.sin((180 + a) * Math.PI/180);
             angle = 0 + a;
-        } else if ( planeSpec.currentDirection == 'DOWN' && planeSpec.desiredDirection == 'RIGHT') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.DOWN && planeSpec.desiredDirection == DirectionEnum.RIGHT) {
             var a = 90 * (-planeSpec.subMove);     
             subModX = 0.5 + 0.5 * Math.cos((180 + a) * Math.PI/180);
             subModY = -0.5 + 0.5 * Math.sin((180 + a) * Math.PI/180);
             angle = 180 + a;
-        } else if ( planeSpec.currentDirection == 'LEFT' && planeSpec.desiredDirection == 'DOWN') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.LEFT && planeSpec.desiredDirection == DirectionEnum.DOWN) {
             var a = 90 * (-planeSpec.subMove);    
             subModX = 0.5 + 0.5 * Math.cos((270 + a) * Math.PI/180);
             subModY = 0.5 + 0.5 * Math.sin((270 + a) * Math.PI/180);
             angle = 270 + a;
-        } else if ( planeSpec.currentDirection == 'UP' && planeSpec.desiredDirection == 'LEFT') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.UP && planeSpec.desiredDirection == DirectionEnum.LEFT) {
             var a = 90 * (-planeSpec.subMove);
             subModX = -0.5 + 0.5 * Math.cos((0 + a) * Math.PI/180);
             subModY = 0.5 + 0.5 * Math.sin((0 + a) * Math.PI/180);
             angle = 360 + a;
-        } else if ( planeSpec.currentDirection == 'RIGHT' && planeSpec.desiredDirection == 'UP') {
+        } else if ( planeSpec.currentDirection == DirectionEnum.RIGHT && planeSpec.desiredDirection == DirectionEnum.UP) {
             var a = 90 * (-planeSpec.subMove);
             subModX = -0.5 + 0.5 * Math.cos((90+a) * Math.PI/180);
             subModY = -0.5 + 0.5 * Math.sin((90+a) * Math.PI/180);
@@ -135,6 +151,7 @@ export class PlayField extends Scene {
             subModY = 0;
         }
         sprite.setPosition(fieldX + (planeSpec.x + subModX) * this.tsize ,fieldY + (planeSpec.y + subModY) * this.tsize).setRotation(angle * Math.PI / 180);
+        console.log([Math.round(sprite.x), Math.round(sprite.y)], sprite.angle);
     }
 
     _drawGroundTiles(state: any) {

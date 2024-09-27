@@ -6,7 +6,7 @@ import FieldMapUtil from "../utils/FieldMapUtil";
 import { PlaneState } from "./PlaneState";
 import PlayerStartPointOption from "../classes/PlayerStartPointOption";
 import RandomStringUtil from "../utils/RandomUtil";
-import { PlaneStateEnum } from "../utils/Enums";
+import { PlaneStateEnum } from "../../../../common/Enums";
 import RandomUtil from "../utils/RandomUtil";
 
 export class AirFieldState extends Schema {
