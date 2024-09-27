@@ -11,14 +11,14 @@ export class PlaneState extends Schema {
     @type("number") currentSpeed: number;  // current speed of plane
     @type("number") takeOffSpeed: number;  // speed to successfully takeoff
     @type("string") state: string;  // 'ok', 'dead', 'takeoff'
-    @type("string") color: string;  // 'RED','BLUE','GREEN'
+    @type("number") color: number;  // 'RED','BLUE','GREEN'
     @type("number") subMove: number; // current part of cell we drove
 
     subStep:number = 0.2; // each cell will require 20 ticket to pass
     decisionFinal = true; // if we can turn plane direction in the next cell
     userCommand: string;
 
-    constructor(x: number, y: number, initialDirection:string, takeOffSpeed: number, color: string) {
+    constructor(x: number, y: number, initialDirection:string, takeOffSpeed: number, color: number) {
         super();
         this.state = PlaneStateEnum.OK;
         this.currentSpeed = 0;
@@ -56,7 +56,7 @@ export class PlaneState extends Schema {
         }
         
         // if we reach end of cell
-        if(this.subMove > 1) {
+        if(this.subMove >= 1) {
             // enable to change direction in new cell
             this.decisionFinal = false
 

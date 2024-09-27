@@ -90,7 +90,7 @@ export default abstract class FieldMapUtil {
       }
 
       var oppositeDir = FieldMapUtil.getOppositeDirection(currentDirection);
-      allowed.filter(o => o != oppositeDir);
+      allowed = allowed.filter(o => o != oppositeDir);
       
       return allowed;
     }

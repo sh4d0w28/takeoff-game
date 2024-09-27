@@ -1,3 +1,4 @@
+import { PlaneColorEnum } from "../../../../common/Enums";
 import { PlaneState } from "../schemas/PlaneState";
 import { PlayerState } from "../schemas/PlayerState";
 import { MapSchema } from "@colyseus/schema"
@@ -13,8 +14,8 @@ export default abstract class RandomUtil {
     }
 
     public static getFreeColor(planes:  MapSchema<PlaneState>) {
-        var colorList = ['RED', 'BLUE', 'GREEN', 'PINK'];
-        var usedColors: string[] = [];
+        var colorList = PlaneColorEnum.list;
+        var usedColors: number[] = [];
         planes.forEach(v => usedColors.push(v.color));
         colorList = colorList.filter(obj => !usedColors.includes(obj));
         return colorList[0];

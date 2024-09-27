@@ -52,35 +52,24 @@ export class PlayField extends Scene {
         }
         var state = this.data.get("state");
 
-        //this._drawGroundTiles(state);
-        this._drawPlanes(state);
-        this._drawDebug(state);
+        var w = 800;
+        var h  = 600;
+
+        this._drawGroundTiles(w,h, state);
+        this._drawPlanes(w,h, state);
 
     }
-    _drawDebug(state: any) {
-        var planeSpec = state.planes.getByIndex(0);
-        var stateString = "[" +  planeSpec.x + " " + planeSpec.y + "]"
-                + " (+"+ ("" + Math.round(planeSpec.subMove * 100)) + ")" 
-                + " is " + planeSpec.state + " from " + planeSpec.currentDirection + " to " + planeSpec.desiredDirection;  
-        
-        var txtc: Phaser.GameObjects.Text = this.data.get('txtc');
-        if(!txtc) {
-            txtc = this.add.text(5,5, "");
-            this.data.set('txtc', txtc);
-        }
-        txtc.text = stateString
-    }
 
-    _drawPlanes(state: any) {
-        var fieldX = 400 - (state.columns * this.tsize / 2) 
-        var fieldY = 100 - (state.rows * this.tsize / 2)
+    _drawPlanes(w:number, h:number, state: any) {
+        var fieldX = (w - state.columns * this.tsize) / 2; 
+        var fieldY = (h - state.rows * this.tsize) / 2;
 
         if(!this.data.get('planes')) {
             this.data.set('planes', {});
         }
         state.planes.entries().forEach(([sessionId,planeSpec]:any)=>{
             if (!this.data.get('planes')[sessionId]) {
-                this.data.get('planes')[sessionId] = this.add.image(-32,-32,"planesSpriteSheet", 0).setVisible(false);
+                this.data.get('planes')[sessionId] = this.add.image(0,0,"planesSpriteSheet", planeSpec.color).setDepth(2);
             }
            var psprite: Phaser.GameObjects.Image = this.data.get('planes')[sessionId];
            this.__drawSinglePlane(fieldX, fieldY, planeSpec, psprite);
@@ -151,12 +140,11 @@ export class PlayField extends Scene {
             subModY = 0;
         }
         sprite.setPosition(fieldX + (planeSpec.x + subModX) * this.tsize ,fieldY + (planeSpec.y + subModY) * this.tsize).setRotation(angle * Math.PI / 180);
-        console.log([Math.round(sprite.x), Math.round(sprite.y)], sprite.angle);
     }
 
-    _drawGroundTiles(state: any) {
-        var fieldX = 400 - (state.columns * this.tsize / 2) 
-        var fieldY = 100 - (state.rows * this.tsize / 2)
+    _drawGroundTiles(w:number,h:number, state: any) {
+        var fieldX = (w - state.columns * this.tsize) / 2 
+        var fieldY = (h - state.rows * this.tsize) / 2
         
         state.mapSpecification.forEach((tile:string ,coord:string)=>{
             const [x,y] = coord.split('.').map(v => parseInt(v));
@@ -166,10 +154,17 @@ export class PlayField extends Scene {
 
     __drawMapChar(x:integer,y:integer, c: string) {
         switch(c) {
-            case '┌': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( 0        ); break;
-            case '┐': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI/2); break;
-            case '┘': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI  ); break;
-            case '└': this.add.image(x,y, "roadSpriteSheet", 2).setRotation(-Math.PI/2); break;
+            case '┌': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( 0         ); break;
+            case '┐': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI/2 ); break;
+            case '┘': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI   ); break;
+            case '└': this.add.image(x,y, "roadSpriteSheet", 2).setRotation(-Math.PI/2 ); break;
+            case '│': this.add.image(x,y, "roadSpriteSheet", 1).setRotation( 0         ); break;
+            case '─': this.add.image(x,y, "roadSpriteSheet", 1).setRotation( Math.PI/2 ); break;
+            case '┤': this.add.image(x,y, "roadSpriteSheet", 0).setRotation( Math.PI   ); break; 
+            case '┴': this.add.image(x,y, "roadSpriteSheet", 0).setRotation(-Math.PI/2 ); break;
+            case '├': this.add.image(x,y, "roadSpriteSheet", 0).setRotation( 0         ); break;
+            case '┬': this.add.image(x,y, "roadSpriteSheet", 0).setRotation( Math.PI/2 ); break;
+            case '┼': this.add.image(x,y, "roadSpriteSheet", 3).setRotation( 0         ); break;
         }
     }
 }
