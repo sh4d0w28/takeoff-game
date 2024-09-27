@@ -33,12 +33,28 @@ export class PlayField extends Scene {
                 endFrame: 4
             }
         });
+        this.load.spritesheet({
+            key: 'bonusSpriteAnimated',
+            url: 'assets/bonussprite-anim.bmp',
+            frameConfig: {
+                frameWidth: this.tsize,
+                frameHeight: this.tsize,
+                startFrame: 0,
+                endFrame: 3
+            }
+        });
     }
 
     init(data: GlobalConfig) {
         this.data.set('GlobalConfig', data);
     }
     create() {
+        this.anims.create({
+            key: 'bonus',
+            frames: this.anims.generateFrameNumbers("bonusSpriteAnimated", {start: 0, end: 3}).concat(this.anims.generateFrameNumbers("bonusSpriteAnimated", {start: 0, end: 3}).slice(1,3).reverse()),
+            repeat: -1,
+            frameRate: 1
+        });
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
         room.onStateChange((state) => {
@@ -54,10 +70,26 @@ export class PlayField extends Scene {
 
         var w = 800;
         var h  = 600;
-
-        this._drawGroundTiles(w,h, state);
+        //this._drawGroundTiles(w,h, state);
         this._drawPlanes(w,h, state);
+        this._drawBonuses(w,h, state);
 
+    }
+
+    _drawBonuses(w:number, h:number, state: any) {
+        
+        if(!this.data.get('bonuses')) {
+            this.data.set('bonuses', {});
+        }
+
+        state.bonuses.entries().forEach((id:string ,bonusSpec:any)=>{ 
+            if(!this.data.get('bonuses')[id]) {
+                var x = (w - bonusSpec.x * this.tsize) / 2; 
+                var y = (h - bonusSpec.y * this.tsize) / 2;        
+                this.data.get('bonuses')[id] = this.add.sprite(x, y,'bonusSpriteAnimated',0);
+                this.data.get('bonuses')[id].anims.play('bonus');
+            }
+        });
     }
 
     _drawPlanes(w:number, h:number, state: any) {

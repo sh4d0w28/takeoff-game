@@ -12,8 +12,8 @@ import { BonusState } from "./BonusState";
 
 export class AirFieldState extends Schema {
 
-    @type("number") columns: number;                             // width(W) of the playfield
-    @type("number") rows: number;                                // height(H) of the playfield
+    @type("number") columns: number;                                // width(W) of the playfield
+    @type("number") rows: number;                                   // height(H) of the playfield
     @type({ map: "string" }) mapSpecification: Map<string, string>; // map specification in the way 'key':'pseudograph'
 
     @type({ map: PlaneState }) planes = new MapSchema<PlaneState>();
@@ -22,12 +22,6 @@ export class AirFieldState extends Schema {
 
     startPoints: PlayerStartPointOption[]
 
-    // options:
-    // {
-    //      width: 2
-    //      height: 2
-    //      map: "┌┐└┘"
-    // }
     constructor(options: AirFieldStateOption) {
         super();
         this.columns = options.width;
@@ -92,12 +86,22 @@ export class AirFieldState extends Schema {
             var allowedcoords = this.mapSpecification.keys().filter((i) => !planecoords.includes(i) ).filter((i)=> !bonuscoords.includes(i)).toArray();
             // get new coord from non-busy cells
             var newcoord = RandomStringUtil.getRandomElement(allowedcoords);
-            var [nx,ny]:any = FieldMapUtil.keyToXy(newcoord);
+            var coord:any = FieldMapUtil.keyToXy(newcoord);
             // remove old one
             this.bonuses.delete(id);
             // append new one
-            this.bonuses.set("b"+(new Date().getTime()), new BonusState(nx, ny, 2) )
+            this.bonuses.set("b"+(new Date().getTime()), new BonusState(coord.x, coord.y, 2) );
+            console.log('bonus add [' + coord.x + " , " + coord.y + "]");
         });
+
+        while(this.bonuses.size < 3) {
+            var allowedcoords = this.mapSpecification.keys().filter((i) => !planecoords.includes(i) ).filter((i)=> !bonuscoords.includes(i)).toArray();
+            var newcoord = RandomStringUtil.getRandomElement(allowedcoords);
+            var coord:any = FieldMapUtil.keyToXy(newcoord);
+            // append new one
+            this.bonuses.set("b"+(new Date().getTime()), new BonusState(coord.x, coord.y, 2) );
+            console.log('bonus add [' + coord.x + " , " + coord.y + "]");
+        }
     }
 
     private _advancePlanes(room?: Room) {

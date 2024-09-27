@@ -31,7 +31,7 @@ export default abstract class FieldMapUtil {
     // {x:0, y:0}
     public static keyToXy(key: string) {
       const xy = key.split('.');
-      return { 'x' : xy[0], 'y' : xy[1] }
+      return { 'x' : parseInt(xy[0]), 'y' : parseInt(xy[1]) }
     }
 
     public static isATakeOffZone(c: string) {
