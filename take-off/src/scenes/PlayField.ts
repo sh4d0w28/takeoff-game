@@ -82,13 +82,19 @@ export class PlayField extends Scene {
             this.data.set('bonuses', {});
         }
 
-        state.bonuses.entries().forEach((id:string ,bonusSpec:any)=>{ 
+        var astate = state;
+
+        state.bonuses.entries().forEach(([id ,bonusSpec]:any)=>{ 
             if(!this.data.get('bonuses')[id]) {
                 var x = (w - bonusSpec.x * this.tsize) / 2; 
                 var y = (h - bonusSpec.y * this.tsize) / 2;        
                 this.data.get('bonuses')[id] = this.add.sprite(x, y,'bonusSpriteAnimated',0);
                 this.data.get('bonuses')[id].anims.play('bonus');
             }
+        });
+        Object.keys(this.data.get("bonuses")).forEach((k:string) => {
+            var d = this.data.get('bonuses')[k];
+            debugger;
         });
     }
 
