@@ -21,6 +21,11 @@ export default abstract class RandomUtil {
         return colorList[0];
     }
 
+    public static getRandomElement(list: string[]) {
+        var randomel = this.getRandomInt(0, list.length -1);
+        return list[randomel];
+    }
+
     public static getRandomInt(min: number, max: number) {
         min = Math.ceil(min);
         max = Math.floor(max);

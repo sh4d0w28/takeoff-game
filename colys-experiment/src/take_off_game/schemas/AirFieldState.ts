@@ -8,6 +8,7 @@ import PlayerStartPointOption from "../classes/PlayerStartPointOption";
 import RandomStringUtil from "../utils/RandomUtil";
 import { PlaneStateEnum } from "../../../../common/Enums";
 import RandomUtil from "../utils/RandomUtil";
+import { BonusState } from "./BonusState";
 
 export class AirFieldState extends Schema {
 
@@ -17,6 +18,7 @@ export class AirFieldState extends Schema {
 
     @type({ map: PlaneState }) planes = new MapSchema<PlaneState>();
     @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
+    @type({ map: BonusState }) bonuses = new MapSchema<BonusState>();
 
     startPoints: PlayerStartPointOption[]
 
@@ -37,8 +39,8 @@ export class AirFieldState extends Schema {
 
     // advance state ( move planes, pickup bonuses, increase scores, takingoff )
     advance(room?: Room) {
-        // TODO : implement
         this._advancePlanes(room);
+        this._advanceBonuses(room);
     }
 
     // add player
@@ -64,6 +66,38 @@ export class AirFieldState extends Schema {
     removePlayer(sessionId: string) {
         this.players.delete(sessionId);
         this.planes.delete(sessionId);
+    }
+
+
+    private _advanceBonuses(room?: Room){
+        // 1. check for collisions
+        let planecoords: string[] = [];
+        let bonuscoords: string[] = [];
+
+        this.planes.forEach((plane, sessionId) => {
+             planecoords.push(plane.x + "." + plane.y);
+        });
+        
+        let collected: string[] = [];
+        this.bonuses.forEach((bonus, bonusId) => {
+            var bonusxy = bonus.x + "." + bonus.y;
+            bonuscoords.push(bonusxy);
+            if(planecoords.includes(bonusxy)) {
+                collected.push(bonusId);
+            }
+        });
+
+        collected.forEach((id) => {
+            // remove from existing coords the one with planes
+            var allowedcoords = this.mapSpecification.keys().filter((i) => !planecoords.includes(i) ).filter((i)=> !bonuscoords.includes(i)).toArray();
+            // get new coord from non-busy cells
+            var newcoord = RandomStringUtil.getRandomElement(allowedcoords);
+            var [nx,ny]:any = FieldMapUtil.keyToXy(newcoord);
+            // remove old one
+            this.bonuses.delete(id);
+            // append new one
+            this.bonuses.set("b"+(new Date().getTime()), new BonusState(nx, ny, 2) )
+        });
     }
 
     private _advancePlanes(room?: Room) {
