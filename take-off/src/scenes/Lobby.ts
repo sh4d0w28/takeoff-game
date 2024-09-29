@@ -10,10 +10,14 @@ export class Lobby extends Scene {
     }
 
     map2_2 = "┌┐└┘";
-    map10_4 = "┌┐┌┐┌┐┌┐┌┐" 
-           + "│└┘└┘└┘└┘│"
-           + "│┌┐┌┐┌┐┌┐│"
-           + "└┘└┘└┘└┘└┘";
+    map10_8 = "┌┐┌┐┌┐┌┐┌┐" 
+            + "│└┘└┘└┘└┘│"
+            + "│┌┐┌┐┌┐┌┐│"
+            + "││└┘└┘└┘└┘"
+            + "││┌┐┌┐┌┐┌┐"
+            + "│└┘└┘└┘└┘│"
+            + "│┌┐┌┐┌┐┌┐│"
+            + "└┘└┘└┘└┘└┘";
 
     init(data: GlobalConfig) {
         this.data.set('GlobalConfig', data);
@@ -49,8 +53,8 @@ export class Lobby extends Scene {
         var client:Client = this.data.get("GlobalConfig").colyseus;
         client.joinOrCreate("takeoff_room", { 
             width: 10,
-            height: 4, 
-            map: this.map10_4,
+            height: 8, 
+            map: this.map10_8,
             startPoints:[
                 {x:0,y:0,direction: DirectionEnum.RIGHT }
             ],

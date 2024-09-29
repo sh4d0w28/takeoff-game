@@ -53,7 +53,7 @@ export class PlayField extends Scene {
             key: 'bonus',
             frames: this.anims.generateFrameNumbers("bonusSpriteAnimated", {start: 0, end: 3}).concat(this.anims.generateFrameNumbers("bonusSpriteAnimated", {start: 0, end: 3}).slice(1,3).reverse()),
             repeat: -1,
-            frameRate: 1
+            frameRate: 20
         });
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
@@ -70,31 +70,49 @@ export class PlayField extends Scene {
 
         var w = 800;
         var h  = 600;
-        //this._drawGroundTiles(w,h, state);
+        this._drawGroundTiles(w,h, state);
         this._drawPlanes(w,h, state);
         this._drawBonuses(w,h, state);
+        this._drawScore(w,h,state);
+    }
 
+    _drawScore(w:number, h:number, state:any) {
+        var fieldX = (w - state.columns * this.tsize) / 2 
+        var fieldY = (h - state.rows * this.tsize) / 2
+        if(!this.data.get('score')) {
+            this.data.set('score', this.add.text(fieldX, fieldY-30, 'score').setDepth(3));
+        }
+        debugger;
     }
 
     _drawBonuses(w:number, h:number, state: any) {
         
+        var fieldX = (w - state.columns * this.tsize) / 2 
+        var fieldY = (h - state.rows * this.tsize) / 2
+
         if(!this.data.get('bonuses')) {
             this.data.set('bonuses', {});
         }
 
-        var astate = state;
+        var incomingBKeys:string[] = [];
+        state.bonuses.keys().forEach((key:string) => {
+            incomingBKeys.push(key);
+        });
 
         state.bonuses.entries().forEach(([id ,bonusSpec]:any)=>{ 
             if(!this.data.get('bonuses')[id]) {
-                var x = (w - bonusSpec.x * this.tsize) / 2; 
-                var y = (h - bonusSpec.y * this.tsize) / 2;        
-                this.data.get('bonuses')[id] = this.add.sprite(x, y,'bonusSpriteAnimated',0);
+                var x = fieldX + bonusSpec.x * this.tsize;
+                var y = fieldY + bonusSpec.y * this.tsize; 
+                this.data.get('bonuses')[id] = this.add.sprite(x, y,'bonusSpriteAnimated',0).setDepth(3);
                 this.data.get('bonuses')[id].anims.play('bonus');
             }
         });
+
         Object.keys(this.data.get("bonuses")).forEach((k:string) => {
-            var d = this.data.get('bonuses')[k];
-            debugger;
+            if (!incomingBKeys.includes(k)) {
+                this.data.get("bonuses")[k].destroy();
+                delete this.data.get("bonuses")[k]; 
+            }
         });
     }
 
@@ -178,6 +196,7 @@ export class PlayField extends Scene {
             subModY = 0;
         }
         sprite.setPosition(fieldX + (planeSpec.x + subModX) * this.tsize ,fieldY + (planeSpec.y + subModY) * this.tsize).setRotation(angle * Math.PI / 180);
+        console.log("["+ sprite.x + ' , '+ sprite.y + '] => [' + planeSpec.x + ' , ' + planeSpec.y + ']');
     }
 
     _drawGroundTiles(w:number,h:number, state: any) {

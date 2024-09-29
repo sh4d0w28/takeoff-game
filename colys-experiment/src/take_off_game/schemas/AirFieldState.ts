@@ -9,6 +9,7 @@ import RandomStringUtil from "../utils/RandomUtil";
 import { PlaneStateEnum } from "../../../../common/Enums";
 import RandomUtil from "../utils/RandomUtil";
 import { BonusState } from "./BonusState";
+import { v4 as uuidv4 } from 'uuid';
 
 export class AirFieldState extends Schema {
 
@@ -77,30 +78,60 @@ export class AirFieldState extends Schema {
             var bonusxy = bonus.x + "." + bonus.y;
             bonuscoords.push(bonusxy);
             if(planecoords.includes(bonusxy)) {
+                console.log('bonus collected [' + bonusxy + "]");
                 collected.push(bonusId);
             }
         });
 
         collected.forEach((id) => {
             // remove from existing coords the one with planes
-            var allowedcoords = this.mapSpecification.keys().filter((i) => !planecoords.includes(i) ).filter((i)=> !bonuscoords.includes(i)).toArray();
+            var allowedcoords = [];
+            for (let key of this.mapSpecification.keys()){
+                if(!planecoords.includes(key)){
+                    continue;
+                }
+                if(!bonuscoords.includes(key)){
+                    continue;
+                }
+                allowedcoords.push(key);
+            }
+            for (let key of this.mapSpecification.keys()){
+                if(planecoords.includes(key)){
+                    continue;
+                }
+                if(bonuscoords.includes(key)){
+                    continue;
+                }
+                allowedcoords.push(key);
+            }
             // get new coord from non-busy cells
             var newcoord = RandomStringUtil.getRandomElement(allowedcoords);
             var coord:any = FieldMapUtil.keyToXy(newcoord);
             // remove old one
             this.bonuses.delete(id);
             // append new one
-            this.bonuses.set("b"+(new Date().getTime()), new BonusState(coord.x, coord.y, 2) );
-            console.log('bonus add [' + coord.x + " , " + coord.y + "]");
+            let bkey = uuidv4();
+            this.bonuses.set("b"+bkey, new BonusState(coord.x, coord.y, 2) );
+            console.log("["+this.bonuses.size+"] bonus add [" + bkey + " : " + coord.x + " , " + coord.y + "]");
         });
 
         while(this.bonuses.size < 3) {
-            var allowedcoords = this.mapSpecification.keys().filter((i) => !planecoords.includes(i) ).filter((i)=> !bonuscoords.includes(i)).toArray();
+            var allowedcoords = [];
+            for (let key of this.mapSpecification.keys()){
+                if(planecoords.includes(key)){
+                    continue;
+                }
+                if(bonuscoords.includes(key)){
+                    continue;
+                }
+                allowedcoords.push(key);
+            }
             var newcoord = RandomStringUtil.getRandomElement(allowedcoords);
             var coord:any = FieldMapUtil.keyToXy(newcoord);
             // append new one
-            this.bonuses.set("b"+(new Date().getTime()), new BonusState(coord.x, coord.y, 2) );
-            console.log('bonus add [' + coord.x + " , " + coord.y + "]");
+            let bkey = uuidv4();
+            this.bonuses.set("b"+bkey, new BonusState(coord.x, coord.y, 2) );
+            console.log("["+this.bonuses.size+"] bonus add [" + bkey + " : " + coord.x + " , " + coord.y + "]");
         }
     }
 
