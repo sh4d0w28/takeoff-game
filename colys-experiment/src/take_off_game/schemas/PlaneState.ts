@@ -33,6 +33,7 @@ export class PlaneState extends Schema {
 
     askToTurn(requestedDirection: string) {
         this.userCommand = requestedDirection;
+        console.log('askToTurn. CD:' + this.currentDirection + "->" + this.desiredDirection + " UC: " + this.userCommand);
     }
 
     decideAutoTurn(dir: string) {

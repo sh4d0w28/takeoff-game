@@ -57,10 +57,20 @@ export class PlayField extends Scene {
         });
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
+        
+        var controlBtns = this.input.keyboard?.addKeys('W,S,A,D');
+        if(controlBtns) {
+            controlBtns['W'].addListener('down',function(){room.send('wasd', 'w');});
+            controlBtns['A'].addListener('down',function(){room.send('wasd', 'a');});
+            controlBtns['S'].addListener('down',function(){room.send('wasd', 's');});
+            controlBtns['D'].addListener('down',function(){room.send('wasd', 'd');});
+        }
+
         room.onStateChange((state) => {
             this.data.set("state", state);
             this.data.set('loaded', true);
         });
+        debugger;
     }
     update() {
         if(!this.data.get('loaded')) {
@@ -74,6 +84,11 @@ export class PlayField extends Scene {
         this._drawPlanes(w,h, state);
         this._drawBonuses(w,h, state);
         this._drawSpeedAndScore(w,h,state);
+    }
+
+    _turn() {
+        var sessionId = this.data.get('GlobalConfig').room.sessionId;
+        
     }
 
     _drawSpeedAndScore(w:number, h:number, state:any) {
