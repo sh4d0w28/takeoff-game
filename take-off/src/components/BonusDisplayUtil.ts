@@ -1,7 +1,20 @@
 
 export default class BonusDisplayUtil {
 
-    private static readonly BONUS_SPRITESHEET = 'bonusSpriteAnimated';
+    public static readonly BONUS_SPRITESHEET = 'bonusSpriteAnimated';
+    
+    public static registerSpriteSheet(scene: Phaser.Scene, tSize: number) {
+        scene.load.spritesheet({
+            key: this.BONUS_SPRITESHEET,
+            url: 'assets/bonussprite-anim.bmp',
+            frameConfig: {
+                frameWidth: tSize,
+                frameHeight: tSize,
+                startFrame: 0,
+                endFrame: 3
+            }
+        });
+    }
 
     /**
      * Draw all bonuses using current data as well as current state

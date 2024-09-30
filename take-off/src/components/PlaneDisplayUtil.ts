@@ -5,6 +5,20 @@ export default class PlaneDisplayUtil {
 
     private static readonly PLANES_SPRITESHEET = 'planesSpriteSheet';
 
+    public static registerSpriteSheet(scene: Phaser.Scene, tSize: number) {
+        scene.load.spritesheet({
+            key: this.PLANES_SPRITESHEET,
+            url: 'assets/planesprite.bmp',
+            frameConfig: {
+                frameWidth: tSize,
+                frameHeight: tSize,
+                spacing: 0,
+                startFrame: 0,
+                endFrame: 4
+            }
+        });
+    }
+    
     /**
      * Draw all the planes using current data as well as current state
      * 

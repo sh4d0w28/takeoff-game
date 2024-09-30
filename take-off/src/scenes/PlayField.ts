@@ -9,58 +9,38 @@ import PlayerUiDisplayUtil from '../components/PlayerUiDisplayUtil';
 export class PlayField extends Scene {   
 
     readonly tsize = 32
+    readonly w = 800;
+    readonly h  = 600;
 
     constructor() {
         super("Game");
     }
+
     preload() {
-        this.load.spritesheet({
-            key: 'roadSpriteSheet',
-            url: 'assets/roadsprite.bmp',
-            frameConfig: {
-                frameWidth: this.tsize,
-                frameHeight: this.tsize,
-                spacing: 1,
-                startFrame: 0,
-                endFrame: 6
-            }
-        });
-        this.load.spritesheet({
-            key: 'planesSpriteSheet',
-            url: 'assets/planesprite.bmp',
-            frameConfig: {
-                frameWidth: this.tsize,
-                frameHeight: this.tsize,
-                spacing: 0,
-                startFrame: 0,
-                endFrame: 4
-            }
-        });
-        this.load.spritesheet({
-            key: 'bonusSpriteAnimated',
-            url: 'assets/bonussprite-anim.bmp',
-            frameConfig: {
-                frameWidth: this.tsize,
-                frameHeight: this.tsize,
-                startFrame: 0,
-                endFrame: 3
-            }
-        });
+        GroundDisplayUtil.registerSpriteSheet(this, this.tsize);
+        PlaneDisplayUtil.registerSpriteSheet(this, this.tsize);
+        BonusDisplayUtil.registerSpriteSheet(this, this.tsize);
     }
 
     init(data: GlobalConfig) {
         this.data.set('GlobalConfig', data);
     }
+
     create() {
         this.anims.create({
             key: 'bonus',
-            frames: this.anims.generateFrameNumbers("bonusSpriteAnimated", {start: 0, end: 3}).concat(this.anims.generateFrameNumbers("bonusSpriteAnimated", {start: 0, end: 3}).slice(1,3).reverse()),
+            frames: this.anims
+                .generateFrameNumbers(BonusDisplayUtil.BONUS_SPRITESHEET, {start: 0, end: 3})
+                .concat(
+                    this.anims.generateFrameNumbers(BonusDisplayUtil.BONUS_SPRITESHEET, {start: 0, end: 3}).slice(1,3).reverse()
+                ),
             repeat: -1,
             frameRate: 20
         });
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
         
+        // register key events 
         var controlBtns = this.input.keyboard?.addKeys('W,S,A,D');
         if(controlBtns) {
             controlBtns.W.addListener('down',function(){room.send('wasd', 'w');});
@@ -68,6 +48,7 @@ export class PlayField extends Scene {
             controlBtns.S.addListener('down',function(){room.send('wasd', 's');});
             controlBtns.D.addListener('down',function(){room.send('wasd', 'd');});
         }
+        // receive message if LOST / WIN
         room.onMessage("state", (message) => {
             switch(message) {
                 case 'LOST':
@@ -77,24 +58,23 @@ export class PlayField extends Scene {
                     break;
             }
         });
+
+        // register state change flow 
         room.onStateChange((state) => {
             this.data.set("state", state);
             this.data.set('loaded', true);
         });
-        debugger;
     }
     update() {
+        // only start to upgrade after loading
         if(!this.data.get('loaded')) {
             return;
         }
         var state = this.data.get("state");
 
-        var w = 800;
-        var h  = 600;
-
-        GroundDisplayUtil.drawGroundTiles(this.tsize, w, h, this, state)
-        PlaneDisplayUtil.drawPlanes(this.tsize, w, h, this, state);
-        BonusDisplayUtil.drawBonuses(this.tsize, w, h, this, state);
-        PlayerUiDisplayUtil.drawGUI(this.tsize, w, h, this, state);
+        GroundDisplayUtil.drawGroundTiles(this.tsize, this.w, this.h, this, state)
+        PlaneDisplayUtil.drawPlanes(this.tsize, this.w, this.h, this, state);
+        BonusDisplayUtil.drawBonuses(this.tsize, this.w, this.h, this, state);
+        PlayerUiDisplayUtil.drawGUI(this.tsize, this.w, this.h, this, state);
     }
 }

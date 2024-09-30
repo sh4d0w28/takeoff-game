@@ -4,6 +4,20 @@ export default class GroundDisplayUtil {
 
     private static readonly GROUND_TILE_SPRITESHEET = 'roadSpriteSheet';
 
+    public static registerSpriteSheet(scene: Scene, tSize: number) {
+        scene.load.spritesheet({
+            key: this.GROUND_TILE_SPRITESHEET,
+            url: 'assets/roadsprite.bmp',
+            frameConfig: {
+                frameWidth: tSize,
+                frameHeight: tSize,
+                spacing: 1,
+                startFrame: 0,
+                endFrame: 6
+            }
+        });
+    }
+    
     /**
      * Draw ground tiles from the state
      * 
