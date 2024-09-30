@@ -10,14 +10,14 @@ export class Lobby extends Scene {
     }
 
     map2_2 = "┌┐└┘";
-    map10_8 = "┌┐┌┐┌┐┌┐┌┐" 
-            + "│└┘└┘└┘└┘│"
-            + "│┌┐┌┐┌┐┌┐│"
-            + "││└┘└┘└┘└┘"
-            + "││┌┐┌┐┌┐┌┐"
-            + "│└┘└┘└┘└┘│"
-            + "│┌┐┌┐┌┐┌┐│"
-            + "└┘└┘└┘└┘└┘";
+    map11_8 = "┌┐┌┐┌┐┌┐┌┐*" 
+            + "│└┼┼┼┼┼┼┘│║"
+            + "│┌┼┼┼┼┼┼┐│║"
+            + "││└┼┼┼┼┘┼┘║"
+            + "││┌┼┼┼┼┼┼┐║"
+            + "│└┼┼┼┼┼┼┼│║"
+            + "│┌┼┼┼┼┼┼┼│║"
+            + "└┘└┘└┘└┘└┴┘";
 
     init(data: GlobalConfig) {
         this.data.set('GlobalConfig', data);
@@ -52,9 +52,9 @@ export class Lobby extends Scene {
     _createRoom(){
         var client:Client = this.data.get("GlobalConfig").colyseus;
         client.joinOrCreate("takeoff_room", { 
-            width: 10,
+            width: 11,
             height: 8, 
-            map: this.map10_8,
+            map: this.map11_8,
             startPoints:[
                 {x:0,y:0,direction: DirectionEnum.RIGHT }
             ],
@@ -93,7 +93,6 @@ export class Lobby extends Scene {
 
         Object.entries(this.data.get('takeoff_rooms')).forEach(([roomId,room]: any) => {
 
-            console.log(room);
             const yPosition = index++ * (roomHeight + roomPadding) + 100; // Adjust vertical position
             // Create rounded rectangle for the room
             const roomRectangle = this.add.rectangle(400, yPosition, 300, roomHeight, 0x007bff, 1)

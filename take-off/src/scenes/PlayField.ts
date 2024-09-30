@@ -73,16 +73,22 @@ export class PlayField extends Scene {
         this._drawGroundTiles(w,h, state);
         this._drawPlanes(w,h, state);
         this._drawBonuses(w,h, state);
-        this._drawScore(w,h,state);
+        this._drawSpeedAndScore(w,h,state);
     }
 
-    _drawScore(w:number, h:number, state:any) {
+    _drawSpeedAndScore(w:number, h:number, state:any) {
         var fieldX = (w - state.columns * this.tsize) / 2 
         var fieldY = (h - state.rows * this.tsize) / 2
+        var sessionId = this.data.get('GlobalConfig').room.sessionId;
+        
         if(!this.data.get('score')) {
             this.data.set('score', this.add.text(fieldX, fieldY-30, 'score').setDepth(3));
         }
-        debugger;
+        var speed  = state.planes.get(sessionId).currentSpeed;
+        let speedCtrl:Phaser.GameObjects.Text = this.data.get('score');
+
+        speedCtrl.setText('speed: ' + state.planes.get(sessionId).currentSpeed + " / " + state.planes.get(sessionId).takeOffSpeed);
+
     }
 
     _drawBonuses(w:number, h:number, state: any) {
@@ -196,7 +202,6 @@ export class PlayField extends Scene {
             subModY = 0;
         }
         sprite.setPosition(fieldX + (planeSpec.x + subModX) * this.tsize ,fieldY + (planeSpec.y + subModY) * this.tsize).setRotation(angle * Math.PI / 180);
-        console.log("["+ sprite.x + ' , '+ sprite.y + '] => [' + planeSpec.x + ' , ' + planeSpec.y + ']');
     }
 
     _drawGroundTiles(w:number,h:number, state: any) {
@@ -211,12 +216,12 @@ export class PlayField extends Scene {
 
     __drawMapChar(x:integer,y:integer, c: string) {
         switch(c) {
-            case '┌': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( 0         ); break;
-            case '┐': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI/2 ); break;
-            case '┘': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI   ); break;
-            case '└': this.add.image(x,y, "roadSpriteSheet", 2).setRotation(-Math.PI/2 ); break;
-            case '│': this.add.image(x,y, "roadSpriteSheet", 1).setRotation( 0         ); break;
-            case '─': this.add.image(x,y, "roadSpriteSheet", 1).setRotation( Math.PI/2 ); break;
+            case '╔': case '┌': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( 0         ); break;
+            case '╗': case '┐': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI/2 ); break;
+            case '╝': case '┘': this.add.image(x,y, "roadSpriteSheet", 2).setRotation( Math.PI   ); break;
+            case '╚': case '└': this.add.image(x,y, "roadSpriteSheet", 2).setRotation(-Math.PI/2 ); break;
+            case '║': case '│': this.add.image(x,y, "roadSpriteSheet", 1).setRotation( 0         ); break;
+            case '═': case '─': this.add.image(x,y, "roadSpriteSheet", 1).setRotation( Math.PI/2 ); break;
             case '┤': this.add.image(x,y, "roadSpriteSheet", 0).setRotation( Math.PI   ); break; 
             case '┴': this.add.image(x,y, "roadSpriteSheet", 0).setRotation(-Math.PI/2 ); break;
             case '├': this.add.image(x,y, "roadSpriteSheet", 0).setRotation( 0         ); break;

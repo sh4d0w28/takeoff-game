@@ -29,7 +29,6 @@ export class PlaneState extends Schema {
         this.desiredDirection = initialDirection; // initially we plan to go direction we face 
         this.subMove = 0;
         this.color = color;   
-        debugger;
     }
 
     askToTurn(requestedDirection: string) {
