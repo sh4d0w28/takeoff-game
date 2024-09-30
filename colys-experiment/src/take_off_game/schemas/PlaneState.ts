@@ -29,11 +29,11 @@ export class PlaneState extends Schema {
         this.desiredDirection = initialDirection; // initially we plan to go direction we face 
         this.subMove = 0;
         this.color = color;   
-        debugger;
     }
 
     askToTurn(requestedDirection: string) {
         this.userCommand = requestedDirection;
+        console.log('askToTurn. CD:' + this.currentDirection + "->" + this.desiredDirection + " UC: " + this.userCommand);
     }
 
     decideAutoTurn(dir: string) {

@@ -63,12 +63,21 @@ export class AirFieldState extends Schema {
         this.planes.delete(sessionId);
     }
 
+    private _planeKeyAt(x:number, y:number):string {
+        let result: string;
+        this.planes.forEach((plane, sessionId) => {
+            if(plane.x == x && plane.y == y) {
+                result = sessionId;
+            }
+        });
+        return result;
+    }
 
     private _advanceBonuses(room?: Room){
         // 1. check for collisions
         let planecoords: string[] = [];
         let bonuscoords: string[] = [];
-
+        
         this.planes.forEach((plane, sessionId) => {
              planecoords.push(plane.x + "." + plane.y);
         });
@@ -77,8 +86,12 @@ export class AirFieldState extends Schema {
         this.bonuses.forEach((bonus, bonusId) => {
             var bonusxy = bonus.x + "." + bonus.y;
             bonuscoords.push(bonusxy);
+            // if current bonus is picked up by some plane(s)
             if(planecoords.includes(bonusxy)) {
-                console.log('bonus collected [' + bonusxy + "]");
+                var coords = FieldMapUtil.keyToXy(bonusxy);
+                var sessionId = this._planeKeyAt(coords.x, coords.y)
+                this.planes.get(sessionId).currentSpeed += bonus.points;                
+                console.log('bonus collected [' + bonusxy + "] by " + sessionId);
                 collected.push(bonusId);
             }
         });
@@ -112,7 +125,7 @@ export class AirFieldState extends Schema {
             // append new one
             let bkey = uuidv4();
             this.bonuses.set("b"+bkey, new BonusState(coord.x, coord.y, 2) );
-            console.log("["+this.bonuses.size+"] bonus add [" + bkey + " : " + coord.x + " , " + coord.y + "]");
+            // console.log("["+this.bonuses.size+"] bonus add [" + bkey + " : " + coord.x + " , " + coord.y + "]");
         });
 
         while(this.bonuses.size < 3) {
@@ -131,7 +144,7 @@ export class AirFieldState extends Schema {
             // append new one
             let bkey = uuidv4();
             this.bonuses.set("b"+bkey, new BonusState(coord.x, coord.y, 2) );
-            console.log("["+this.bonuses.size+"] bonus add [" + bkey + " : " + coord.x + " , " + coord.y + "]");
+            // console.log("["+this.bonuses.size+"] bonus add [" + bkey + " : " + coord.x + " , " + coord.y + "]");
         }
     }
 
