@@ -8,15 +8,22 @@ export default class PlaneDisplayUtil {
     public static registerSpriteSheet(scene: Phaser.Scene, tSize: number) {
         scene.load.spritesheet({
             key: this.PLANES_SPRITESHEET,
-            url: 'assets/planesprite.bmp',
+            url: 'assets/planesprite-anim.bmp',
             frameConfig: {
                 frameWidth: tSize,
                 frameHeight: tSize,
-                spacing: 0,
-                startFrame: 0,
-                endFrame: 4
+                spacing: 0
             }
         });
+    }
+
+    public static registerAnimation(scene: Phaser.Scene) {     
+        scene.anims.create({ key: 'planeAnim1', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[0, 6,12,18]}), repeat: 1, frameRate: 4});
+        scene.anims.create({ key: 'planeAnim2', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[1, 7,13,19]}), repeat: 1, frameRate: 4});
+        scene.anims.create({ key: 'planeAnim3', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[2, 8,14,20]}), repeat: 1, frameRate: 4});
+        scene.anims.create({ key: 'planeAnim4', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[3, 9,15,21]}), repeat: 1, frameRate: 4});
+        scene.anims.create({ key: 'planeAnim5', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[4,10,16,22]}), repeat: 1, frameRate: 4});
+        scene.anims.create({ key: 'planeAnim6', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[5,11,17,23]}), repeat: 1, frameRate: 4});
     }
     
     /**
@@ -48,11 +55,18 @@ export default class PlaneDisplayUtil {
 
             // create image on default position
             if (!planes[sessionId]) {
-                planes[sessionId] = scene.add.image(0,0,this.PLANES_SPRITESHEET, planeSpec.color).setDepth(2);
+                planes[sessionId] = scene.add.sprite(0,0,this.PLANES_SPRITESHEET, planeSpec.color).setDepth(2);
             }
-            var psprite: Phaser.GameObjects.Image = planes[sessionId];
+            var psprite: Phaser.GameObjects.Sprite = planes[sessionId];
             // move sprite according to plane state
-            this.drawSinglePlane(fieldLeftX + planeSpec.x * tSize, fieldTopY + planeSpec.y * tSize, tSize, planeSpec, psprite);
+            this.movePlaneSprite(fieldLeftX + planeSpec.x * tSize, fieldTopY + planeSpec.y * tSize, tSize, planeSpec, psprite);
+            if (planeSpec.state == 'dead'.toUpperCase()) {
+                if(!psprite.data.has('dead')) {
+                    psprite.data.set('dead', true);
+                    debugger;
+                    psprite.anims.play('planeAnim' + planeSpec.color);
+                }
+            }
         });
     }
     
@@ -66,7 +80,7 @@ export default class PlaneDisplayUtil {
      * @param planeSpec     - plane data from Colyseus
      * @param sprite        - current plane sprite
      */
-    private static drawSinglePlane(planeLeftX: integer, planeTopY: integer, tSize:number, planeSpec: any, sprite: Phaser.GameObjects.Image) 
+    private static movePlaneSprite(planeLeftX: integer, planeTopY: integer, tSize:number, planeSpec: any, sprite: Phaser.GameObjects.Image) 
     {
         var subModX = 0;
         var subModY = 0;

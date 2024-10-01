@@ -27,16 +27,10 @@ export class PlayField extends Scene {
     }
 
     create() {
-        this.anims.create({
-            key: 'bonus',
-            frames: this.anims
-                .generateFrameNumbers(BonusDisplayUtil.BONUS_SPRITESHEET, {start: 0, end: 3})
-                .concat(
-                    this.anims.generateFrameNumbers(BonusDisplayUtil.BONUS_SPRITESHEET, {start: 0, end: 3}).slice(1,3).reverse()
-                ),
-            repeat: -1,
-            frameRate: 20
-        });
+
+        PlaneDisplayUtil.registerAnimation(this);
+        BonusDisplayUtil.registerAnimation(this);
+
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
         
@@ -52,6 +46,7 @@ export class PlayField extends Scene {
         room.onMessage("state", (message) => {
             switch(message) {
                 case 'LOST':
+                    // TODO : show GO screen
                     debugger;
                     break;
                 default:

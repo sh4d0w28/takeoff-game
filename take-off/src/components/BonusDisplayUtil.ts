@@ -16,6 +16,15 @@ export default class BonusDisplayUtil {
         });
     }
 
+    public static registerAnimation(scene: Phaser.Scene) {
+        scene.anims.create({
+            key: 'bonus',
+            frames: scene.anims.generateFrameNumbers(BonusDisplayUtil.BONUS_SPRITESHEET, {frames: [0,1,2,3,2,1,0]}),
+            repeat: -1,
+            frameRate: 20
+        });
+    }
+
     /**
      * Draw all bonuses using current data as well as current state
      * 
