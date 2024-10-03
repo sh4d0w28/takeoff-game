@@ -1,3 +1,4 @@
+import PlaneDisplayUtil from "./PlaneDisplayUtil";
 
 export default class PlayerUiDisplayUtil {
     
@@ -17,7 +18,26 @@ export default class PlayerUiDisplayUtil {
         var fieldLeftX = (w - state.columns * tSize) / 2; 
         var fieldTopY = (h - state.rows * tSize) / 2;
 
-        this.drawSpeedAndScore(fieldLeftX, fieldTopY, sessionId, scene, state)
+        scene.add.rectangle(
+            fieldLeftX - 30, 
+            fieldTopY  - 30, 
+            fieldLeftX + 30  + (state.columns * tSize) + 30,
+            fieldTopY  + 30 + (state.rows * tSize) + 30,
+            0x001100, 
+        ).setDepth(-1);
+
+        this.drawSpeedAndScore(fieldLeftX, fieldTopY, sessionId, scene, state);
+        this.drawPlayersScores(fieldLeftX, fieldTopY + (state.rows * tSize), scene, state)
+    }
+
+    private static drawPlayersScores(leftX: number, topY: number, scene:Phaser.Scene, state: any) {
+        var i = 0;
+        state.players.entries().forEach(([sessionId,playerSpec]:any)=>{
+            var planeSpec = state.planes.get(sessionId)
+            scene.add.sprite(leftX, topY + 10 + 35 * i, PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color).setDepth(2);
+            scene.add.text(leftX + 35, topY + 5 + 35 * i, playerSpec.displayedName + " : " + playerSpec.score).setDepth(2);
+            i++;
+        });
     }
 
     /**

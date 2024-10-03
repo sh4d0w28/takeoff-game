@@ -3,7 +3,7 @@ import { DirectionEnum } from "../../../common/Enums";
 
 export default class PlaneDisplayUtil {
 
-    private static readonly PLANES_SPRITESHEET = 'planesSpriteSheet';
+    public static readonly PLANES_SPRITESHEET = 'planesSpriteSheet';
 
     public static registerSpriteSheet(scene: Phaser.Scene, tSize: number) {
         scene.load.spritesheet({

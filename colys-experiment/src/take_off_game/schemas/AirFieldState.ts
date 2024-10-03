@@ -43,6 +43,10 @@ export class AirFieldState extends Schema {
     // externalId - User id in oAuth provider
     // displayName - Name user want to see
     addPlayer(sessionId: string, externalId: string, displayName: string) {
+        
+        if(!displayName) {
+            displayName = RandomStringUtil.getFreeName(this.players);
+        }
         //register player
         this.players.set(sessionId, new PlayerState(sessionId, externalId, displayName));
         // get startpoint
