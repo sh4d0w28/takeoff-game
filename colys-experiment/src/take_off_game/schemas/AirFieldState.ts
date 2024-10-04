@@ -44,6 +44,8 @@ export class AirFieldState extends Schema {
     // displayName - Name user want to see
     addPlayer(sessionId: string, externalId: string, displayName: string) {
         
+        console.log('add player');
+        
         if(!displayName) {
             displayName = RandomStringUtil.getFreeName(this.players);
         }

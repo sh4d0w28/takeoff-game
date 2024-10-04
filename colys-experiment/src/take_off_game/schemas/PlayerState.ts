@@ -12,5 +12,6 @@ export class PlayerState extends Schema {
         this.sessionId = sessionId;
         this.externalId = externalId;
         this.displayedName = displayedName;
+        this.score = 0;
     }
 }

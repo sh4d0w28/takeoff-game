@@ -2,6 +2,23 @@ import PlaneDisplayUtil from "./PlaneDisplayUtil";
 
 export default class PlayerUiDisplayUtil {
     
+    readonly tSize: number;
+    readonly scene: Phaser.Scene;
+    readonly w:number;
+    readonly h:number;
+
+    public constructor(s: Phaser.Scene, tsize :number, w:number, h:number) {
+        this.scene = s;
+        this.tSize = tsize;
+        this.w = w;
+        this.h = h;
+
+        // keep score texts and icons
+        if(!this.scene.data.get('playerScores')) {
+            this.scene.data.set('playerScores', {});
+        }
+    }
+
     /**
      * Draw player GUI using current data as well as current state
      * 
@@ -11,32 +28,46 @@ export default class PlayerUiDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
      */
-    public static drawGUI(tSize: number, w:number, h:number, scene:Phaser.Scene, state: any) {
+    public drawGUI(state: any) {
         // get current user session id
-        var sessionId = scene.data.get('GlobalConfig').room.sessionId;
+        var sessionId = this.scene.data.get('GlobalConfig').room.sessionId;
         // center point based 
-        var fieldLeftX = (w - state.columns * tSize) / 2; 
-        var fieldTopY = (h - state.rows * tSize) / 2;
+        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
+        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
 
-        scene.add.rectangle(
+        this.scene.add.rectangle(
             fieldLeftX - 30, 
             fieldTopY  - 30, 
-            fieldLeftX + 30  + (state.columns * tSize) + 30,
-            fieldTopY  + 30 + (state.rows * tSize) + 30,
+            fieldLeftX + 30  + (state.columns * this.tSize) + 30,
+            fieldTopY  + 30 + (state.rows * this.tSize) + 30,
             0x001100, 
         ).setDepth(-1);
 
-        this.drawSpeedAndScore(fieldLeftX, fieldTopY, sessionId, scene, state);
-        this.drawPlayersScores(fieldLeftX, fieldTopY + (state.rows * tSize), scene, state)
+        this.drawSpeedAndScore(fieldLeftX, fieldTopY, sessionId, state);
+        this.drawPlayersScores(fieldLeftX, fieldTopY + (state.rows * this.tSize), state)
     }
 
-    private static drawPlayersScores(leftX: number, topY: number, scene:Phaser.Scene, state: any) {
+    private drawPlayersScores(leftX: number, topY: number, state: any) {
         var i = 0;
         state.players.entries().forEach(([sessionId,playerSpec]:any)=>{
             var planeSpec = state.planes.get(sessionId)
-            scene.add.sprite(leftX, topY + 10 + 35 * i, PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color).setDepth(2);
-            scene.add.text(leftX + 35, topY + 5 + 35 * i, playerSpec.displayedName + " : " + playerSpec.score).setDepth(2);
-            i++;
+
+            var planeScoreSprite: Phaser.GameObjects.Sprite;
+            var planeScoreText: Phaser.GameObjects.Text;
+
+            if(!this.scene.data.get('playerScores')[sessionId]) {
+                planeScoreSprite = this.scene.add.sprite(leftX, topY + 10 + 35 * i, PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color).setDepth(2); 
+                planeScoreText = this.scene.add.text(leftX + 35, topY + 5 + 35 * i, playerSpec.displayedName + " : " + playerSpec.score).setDepth(2);
+                i++;
+                this.scene.data.get('playerScores')[sessionId] = {
+                    sprite :planeScoreSprite,
+                    text :planeScoreText
+                }
+            } else {
+                planeScoreSprite = this.scene.data.get('playerScores')[sessionId].sprite;
+                planeScoreText = this.scene.data.get('playerScores')[sessionId].text
+                planeScoreText.setText(playerSpec.displayedName + " : " + playerSpec.score);
+            }
         });
     }
 
@@ -48,11 +79,11 @@ export default class PlayerUiDisplayUtil {
      * @param scene     - current scene to draw onto 
      * @param state     - current state recevied from Colyseus
      */
-    private static drawSpeedAndScore(leftX:number, topY:number, sessionId:string, scene:Phaser.Scene, state: any) {       
-        if(!scene.data.get('speed')) {
-            scene.data.set('speed', scene.add.text(leftX, topY-30, 'speed').setDepth(3));
+    private drawSpeedAndScore(leftX:number, topY:number, sessionId:string, state: any) {       
+        if(!this.scene.data.get('speed')) {
+            this.scene.data.set('speed', this.scene.add.text(leftX, topY-30, 'speed').setDepth(3));
         }
-        let speedCtrl:Phaser.GameObjects.Text = scene.data.get('speed');
+        let speedCtrl:Phaser.GameObjects.Text = this.scene.data.get('speed');
         let myPlane = state.planes.get(sessionId);
         if(myPlane.currentSpeed >= myPlane.takeOffSpeed) {
             speedCtrl.setText('SPEED ACHIEVED! GO TO RUNWAY!');

@@ -1,25 +1,43 @@
 
 export default class BonusDisplayUtil {
 
+    readonly tSize: number;
+    readonly scene: Phaser.Scene;
+    readonly w:number;
+    readonly h:number;
+
     public static readonly BONUS_SPRITESHEET = 'bonusSpriteAnimated';
+    public static readonly BONUS_SPRITEFILE = 'assets/bonussprite-anim.bmp';
     
-    public static registerSpriteSheet(scene: Phaser.Scene, tSize: number) {
-        scene.load.spritesheet({
-            key: this.BONUS_SPRITESHEET,
-            url: 'assets/bonussprite-anim.bmp',
+    public constructor(s: Phaser.Scene, tsize :number, w:number, h:number) {
+        this.scene = s;
+        this.tSize = tsize;
+        this.w = w;
+        this.h = h;
+
+        // store sprites
+        if(!this.scene.data.get('bonuses')) {
+            this.scene.data.set('bonuses', {});
+        }
+    }
+
+    public registerSpriteSheet() {
+        this.scene.load.spritesheet({
+            key: BonusDisplayUtil.BONUS_SPRITESHEET,
+            url: BonusDisplayUtil.BONUS_SPRITEFILE,
             frameConfig: {
-                frameWidth: tSize,
-                frameHeight: tSize,
+                frameWidth: this.tSize,
+                frameHeight: this.tSize,
                 startFrame: 0,
                 endFrame: 3
             }
         });
     }
 
-    public static registerAnimation(scene: Phaser.Scene) {
-        scene.anims.create({
+    public registerAnimation() {
+        this.scene.anims.create({
             key: 'bonus',
-            frames: scene.anims.generateFrameNumbers(BonusDisplayUtil.BONUS_SPRITESHEET, {frames: [0,1,2,3,2,1,0]}),
+            frames: this.scene.anims.generateFrameNumbers(BonusDisplayUtil.BONUS_SPRITESHEET, {frames: [0,1,2,3,2,1,0]}),
             repeat: -1,
             frameRate: 20
         });
@@ -34,17 +52,14 @@ export default class BonusDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
     */
-    public static drawBonuses(tSize:number, w:number, h:number, scene: Phaser.Scene,  state: any) 
+    public drawBonuses(state: any) 
     {
         // center point based 
-        var fieldLeftX = (w - state.columns * tSize) / 2; 
-        var fieldTopY = (h - state.rows * tSize) / 2;
+        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
+        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
 
         // prepare bonuses to store sprites
-        if(!scene.data.get('bonuses')) {
-            scene.data.set('bonuses', {});
-        }
-        var bonuses = scene.data.get('bonuses')
+        var bonuses = this.scene.data.get('bonuses')
 
         // transform current existing bonuses list to list of coordinates: ["0.0","1.0",....]
         var incomingBKeys:string[] = [];
@@ -55,9 +70,9 @@ export default class BonusDisplayUtil {
         // draw all bonuses from the state ( create if non-exists )
         state.bonuses.entries().forEach(([id ,bonusSpec]:any)=>{ 
             if(!bonuses[id]) {
-                var x = fieldLeftX + bonusSpec.x * tSize;
-                var y = fieldTopY + bonusSpec.y * tSize; 
-                bonuses[id] = scene.add.sprite(x, y,this.BONUS_SPRITESHEET,0).setDepth(3);
+                var x = fieldLeftX + bonusSpec.x * this.tSize;
+                var y = fieldTopY + bonusSpec.y * this.tSize; 
+                bonuses[id] = this.scene.add.sprite(x, y,BonusDisplayUtil.BONUS_SPRITESHEET,0).setDepth(3);
                 bonuses[id].anims.play('bonus');
             }
         });

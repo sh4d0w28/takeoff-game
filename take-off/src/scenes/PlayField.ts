@@ -12,14 +12,19 @@ export class PlayField extends Scene {
     readonly w = 800;
     readonly h  = 600;
 
+    readonly planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
+    readonly groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h);
+    readonly bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
+    readonly playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
+
     constructor() {
         super("Game");
     }
 
     preload() {
-        GroundDisplayUtil.registerSpriteSheet(this, this.tsize);
-        PlaneDisplayUtil.registerSpriteSheet(this, this.tsize);
-        BonusDisplayUtil.registerSpriteSheet(this, this.tsize);
+        this.groundDisplayUtil.registerSpriteSheet();
+        this.planeDisplayUtil.registerSpriteSheet();
+        this.bonusDisplayUtil.registerSpriteSheet();
     }
 
     init(data: GlobalConfig) {
@@ -28,8 +33,8 @@ export class PlayField extends Scene {
 
     create() {
 
-        PlaneDisplayUtil.registerAnimation(this);
-        BonusDisplayUtil.registerAnimation(this);
+        this.planeDisplayUtil.registerAnimation();
+        this.bonusDisplayUtil.registerAnimation();
 
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
@@ -67,9 +72,9 @@ export class PlayField extends Scene {
         }
         var state = this.data.get("state");
 
-        GroundDisplayUtil.drawGroundTiles(this.tsize, this.w, this.h, this, state)
-        PlaneDisplayUtil.drawPlanes(this.tsize, this.w, this.h, this, state);
-        BonusDisplayUtil.drawBonuses(this.tsize, this.w, this.h, this, state);
-        PlayerUiDisplayUtil.drawGUI(this.tsize, this.w, this.h, this, state);
+        this.planeDisplayUtil.drawPlanes(state);
+        this.groundDisplayUtil.drawGroundTiles(state);
+        this.bonusDisplayUtil.drawBonuses(state);
+        this.playerUiDisplayUtil.drawGUI(state);
     }
 }

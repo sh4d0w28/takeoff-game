@@ -1,31 +1,52 @@
-import { DirectionEnum } from "../../../common/Enums";
-
+import { DirectionEnum } from "../../../common/Enums"; 
 
 export default class PlaneDisplayUtil {
 
-    public static readonly PLANES_SPRITESHEET = 'planesSpriteSheet';
+    readonly tSize: number;
+    readonly scene: Phaser.Scene;
+    readonly w:number;
+    readonly h:number;
 
-    public static registerSpriteSheet(scene: Phaser.Scene, tSize: number) {
-        scene.load.spritesheet({
-            key: this.PLANES_SPRITESHEET,
-            url: 'assets/planesprite-anim.bmp',
+    public static readonly PLANES_SPRITESHEET = 'planesSpriteSheet';
+    public static readonly PLANES_SPRITEFILE = 'assets/planesprite-anim.bmp'; 
+    
+    public constructor(s: Phaser.Scene, tsize :number, w:number, h:number) {
+        this.scene = s;
+        this.tSize = tsize;
+        this.w = w;
+        this.h = h;
+
+        // store sprites
+        if(!this.scene.data.get('planes')) {
+            this.scene.data.set('planes', {});
+        }
+    }
+
+    public registerSpriteSheet() {
+        this.scene.load.spritesheet({
+            key: PlaneDisplayUtil.PLANES_SPRITESHEET,
+            url: PlaneDisplayUtil.PLANES_SPRITEFILE,
             frameConfig: {
-                frameWidth: tSize,
-                frameHeight: tSize,
+                frameWidth: this.tSize,
+                frameHeight: this.tSize,
                 spacing: 0
             }
         });
     }
 
-    public static registerAnimation(scene: Phaser.Scene) {     
-        scene.anims.create({ key: 'planeAnim1', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[0, 6,12,18]}), repeat: 1, frameRate: 4});
-        scene.anims.create({ key: 'planeAnim2', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[1, 7,13,19]}), repeat: 1, frameRate: 4});
-        scene.anims.create({ key: 'planeAnim3', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[2, 8,14,20]}), repeat: 1, frameRate: 4});
-        scene.anims.create({ key: 'planeAnim4', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[3, 9,15,21]}), repeat: 1, frameRate: 4});
-        scene.anims.create({ key: 'planeAnim5', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[4,10,16,22]}), repeat: 1, frameRate: 4});
-        scene.anims.create({ key: 'planeAnim6', frames: scene.anims.generateFrameNumbers(this.PLANES_SPRITESHEET, {frames:[5,11,17,23]}), repeat: 1, frameRate: 4});
+    public registerAnimation() {     
+        this.registerAnim('planeAnim1', [0, 6,12,18]);
+        this.registerAnim('planeAnim2', [1, 7,13,19]);
+        this.registerAnim('planeAnim3', [2, 8,14,20]);
+        this.registerAnim('planeAnim4', [3, 9,15,21]);
+        this.registerAnim('planeAnim5', [4,10,16,22]);
+        this.registerAnim('planeAnim6', [5,11,17,23]);
     }
     
+    private registerAnim(key: string, frames: number[] ) {
+        this.scene.anims.create({ key: key, frames: this.scene.anims.generateFrameNumbers(PlaneDisplayUtil.PLANES_SPRITESHEET, {frames: frames}), repeat: 1, frameRate: 4});
+    }
+
     /**
      * Draw all the planes using current data as well as current state
      * 
@@ -35,18 +56,13 @@ export default class PlaneDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
     */
-    public static drawPlanes(tSize: number, w:number, h:number, scene: Phaser.Scene, state: any) 
+    public drawPlanes(state: any) 
     {
         // center point based 
-        var fieldLeftX = (w - state.columns * tSize) / 2; 
-        var fieldTopY = (h - state.rows * tSize) / 2;
+        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
+        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
 
-        // prepare 'planes' object to keep planes data locally for processing
-        if(!scene.data.get('planes')) {
-            scene.data.set('planes', {});
-        }
-
-        let planes = scene.data.get('planes');
+        let planes = this.scene.data.get('planes');
         
         // for each plane:
         // either create a sprite object in memory, 
@@ -54,17 +70,27 @@ export default class PlaneDisplayUtil {
         state.planes.entries().forEach(([sessionId,planeSpec]:any)=>{
 
             // create image on default position
+            var planeSprite: Phaser.GameObjects.Sprite;
+
             if (!planes[sessionId]) {
-                planes[sessionId] = scene.add.sprite(0,0,this.PLANES_SPRITESHEET, planeSpec.color).setDepth(2);
+                planeSprite = this.scene.add.sprite(0,0,PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color).setDepth(2);
+                planes[sessionId] = planeSprite;
+            } else {
+                planeSprite = planes[sessionId];
             }
-            var psprite: Phaser.GameObjects.Sprite = planes[sessionId];
+
             // move sprite according to plane state
-            this.movePlaneSprite(fieldLeftX + planeSpec.x * tSize, fieldTopY + planeSpec.y * tSize, tSize, planeSpec, psprite);
+            // fieldLeftX - left of game field, we add Game-coordinates (map based)
+            // fieldTopY - top of game field, we add Game-coordinates (map based)
+            // planeSpec is an object from Colyseus
+            // planeSprite is an sprite object to draw
+            this.movePlaneSprite(fieldLeftX + planeSpec.x * this.tSize, fieldTopY + planeSpec.y * this.tSize, planeSpec, planeSprite);
+            
+            // if plane is dead, play dead animation, set the state to avoid repeatable triggers
             if (planeSpec.state == 'dead'.toUpperCase()) {
-                if(!psprite.data.has('dead')) {
-                    psprite.data.set('dead', true);
-                    debugger;
-                    psprite.anims.play('planeAnim' + planeSpec.color);
+                if(!planeSprite.data.has('dead')) {
+                    planeSprite.data.set('dead', true);
+                    planeSprite.anims.play('planeAnim' + planeSpec.color);
                 }
             }
         });
@@ -80,7 +106,7 @@ export default class PlaneDisplayUtil {
      * @param planeSpec     - plane data from Colyseus
      * @param sprite        - current plane sprite
      */
-    private static movePlaneSprite(planeLeftX: integer, planeTopY: integer, tSize:number, planeSpec: any, sprite: Phaser.GameObjects.Image) 
+    private movePlaneSprite(planeLeftX: integer, planeTopY: integer, planeSpec: any, sprite: Phaser.GameObjects.Image) 
     {
         var subModX = 0;
         var subModY = 0;
@@ -146,7 +172,7 @@ export default class PlaneDisplayUtil {
             subModY = 0;
         }
         sprite
-            .setPosition(planeLeftX + subModX * tSize ,planeTopY + subModY * tSize)
+            .setPosition(planeLeftX + subModX * this.tSize ,planeTopY + subModY * this.tSize)
             .setRotation(angle * Math.PI / 180);
     }
 }

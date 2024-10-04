@@ -2,15 +2,30 @@ import { Scene } from "phaser";
 
 export default class GroundDisplayUtil {
 
-    private static readonly GROUND_TILE_SPRITESHEET = 'roadSpriteSheet';
+    readonly tSize: number;
+    readonly scene: Phaser.Scene;
+    readonly w:number;
+    readonly h:number;
 
-    public static registerSpriteSheet(scene: Scene, tSize: number) {
-        scene.load.spritesheet({
-            key: this.GROUND_TILE_SPRITESHEET,
-            url: 'assets/roadsprite.bmp',
+    private static readonly GROUND_TILE_SPRITESHEET = 'roadSpriteSheet';
+    public static readonly GROUND_TILE_SPRITEFILE = 'assets/roadsprite.bmp';
+
+    public constructor(s: Phaser.Scene, tsize: number, w:number, h:number) {
+        this.scene = s;
+        this.tSize = tsize;
+        this.w = w;
+        this.h = h;
+
+        // no saving required
+    }
+
+    public registerSpriteSheet() {
+        this.scene.load.spritesheet({
+            key: GroundDisplayUtil.GROUND_TILE_SPRITESHEET,
+            url: GroundDisplayUtil.GROUND_TILE_SPRITEFILE,
             frameConfig: {
-                frameWidth: tSize,
-                frameHeight: tSize,
+                frameWidth: this.tSize,
+                frameHeight: this.tSize,
                 spacing: 1,
                 startFrame: 0,
                 endFrame: 6
@@ -27,14 +42,14 @@ export default class GroundDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
      */
-    public static drawGroundTiles(tSize:number, w:number,h:number, scene: Scene, state: any) {
+    public drawGroundTiles(state: any) {
         // center point based 
-        var fieldLeftX = (w - state.columns * tSize) / 2; 
-        var fieldTopY = (h - state.rows * tSize) / 2;
+        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
+        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
         
         state.mapSpecification.forEach((tile:string ,coord:string)=>{
             const [x,y] = coord.split('.').map(v => parseInt(v));
-            this.drawMapChar(fieldLeftX + x * tSize, fieldTopY + y * tSize, tile, scene);
+            this.drawMapChar(fieldLeftX + x * this.tSize, fieldTopY + y * this.tSize, tile, this.scene);
         });
     }
 
@@ -45,20 +60,20 @@ export default class GroundDisplayUtil {
      * @param c     - tile spec
      * @param scene - scene to draw onto 
      */
-    private static drawMapChar(x:integer,y:integer, c: string, scene: Scene) {
+    private drawMapChar(x:integer,y:integer, c: string, scene: Scene) {
         switch(c) {
-            case '╔': case '┌': scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 2);                          break;
-            case '╗': case '┐': scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI/2 ); break;
-            case '╝': case '┘': scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI   ); break;
-            case '╚': case '└': scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 2).setRotation(-Math.PI/2 ); break;
-            case '║': case '│': scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 1);                          break;
-            case '═': case '─': scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 1).setRotation( Math.PI/2 ); break;
-            case '┤':           scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI   ); break; 
-            case '┴':           scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 0).setRotation(-Math.PI/2 ); break;
-            case '├':           scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 0);                          break;
-            case '┬':           scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI/2 ); break;
-            case '┼':           scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 3);                          break;
-            case '*':           scene.add.image(x,y, this.GROUND_TILE_SPRITESHEET, 4);                          break;
+            case '╔': case '┌': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2);                          break;
+            case '╗': case '┐': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI/2 ); break;
+            case '╝': case '┘': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI   ); break;
+            case '╚': case '└': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation(-Math.PI/2 ); break;
+            case '║': case '│': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 1);                          break;
+            case '═': case '─': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 1).setRotation( Math.PI/2 ); break;
+            case '┤':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI   ); break; 
+            case '┴':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation(-Math.PI/2 ); break;
+            case '├':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0);                          break;
+            case '┬':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI/2 ); break;
+            case '┼':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 3);                          break;
+            case '*':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4);                          break;
         }
     }
 }
