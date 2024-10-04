@@ -12,16 +12,21 @@ export class PlayField extends Scene {
     readonly w = 800;
     readonly h  = 600;
 
-    readonly planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
-    readonly groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h);
-    readonly bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
-    readonly playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
+    private planeDisplayUtil: PlaneDisplayUtil;
+    private groundDisplayUtil: GroundDisplayUtil;
+    private bonusDisplayUtil: BonusDisplayUtil;
+    private playerUiDisplayUtil: PlayerUiDisplayUtil;
 
     constructor() {
         super("Game");
     }
 
     preload() {
+        this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
+        this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h);
+        this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
+        this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
+
         this.groundDisplayUtil.registerSpriteSheet();
         this.planeDisplayUtil.registerSpriteSheet();
         this.bonusDisplayUtil.registerSpriteSheet();
@@ -39,20 +44,24 @@ export class PlayField extends Scene {
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
         
+        var lastSent = Date.now();
+
+        var sendInterval = 1000;
+
         // register key events 
         var controlBtns = this.input.keyboard?.addKeys('W,S,A,D');
         if(controlBtns) {
-            controlBtns.W.addListener('down',function(){room.send('wasd', 'w');});
-            controlBtns.A.addListener('down',function(){room.send('wasd', 'a');});
-            controlBtns.S.addListener('down',function(){room.send('wasd', 's');});
-            controlBtns.D.addListener('down',function(){room.send('wasd', 'd');});
+            controlBtns.W.addListener('up',    function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'w'); console.log('sent w'); } else {console.log('jitter w');} });
+            controlBtns.A.addListener('left',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'a'); console.log('sent a'); } else {console.log('jitter a');} });
+            controlBtns.S.addListener('down',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 's'); console.log('sent s'); } else {console.log('jitter s');} });
+            controlBtns.D.addListener('right', function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'd'); console.log('sent d'); } else {console.log('jitter d');}});
         }
         // receive message if LOST / WIN
         room.onMessage("state", (message) => {
             switch(message) {
                 case 'LOST':
                     // TODO : show GO screen
-                    debugger;
+                    console.log("YOU LOSST!");
                     break;
                 default:
                     break;
