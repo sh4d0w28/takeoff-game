@@ -59,7 +59,7 @@ export class Lobby extends Scene {
                 {x:0,y:0,direction: DirectionEnum.RIGHT }
             ],
             externalId: "extId",
-            name: "uuname"
+            displayName: "uuname"
         }).then((room: Room) => {
             var config: GlobalConfig = this.data.get('GlobalConfig');
             config.room = room;
@@ -88,8 +88,6 @@ export class Lobby extends Scene {
         const roomHeight = 50;
         const roomPadding = 10;
         var index = 0;
-
-        console.log('rms', this.data.get("takeoff_rooms"));
 
         Object.entries(this.data.get('takeoff_rooms')).forEach(([roomId,room]: any) => {
 

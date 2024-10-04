@@ -10,10 +10,11 @@ export class GameRoom extends Room<AirFieldState> {
     
     public delayedInterval!: Delayed;
   
-    onCreate (options: AirFieldStateOption) {    
+    onCreate (options: AirFieldStateOption) {
       this.setState(new AirFieldState(options));
       this.clock.start();
   
+      
       this.onMessage("wasd", (client, message:string) => {
         switch(message.toLowerCase()) {
           case 'w':
@@ -37,17 +38,17 @@ export class GameRoom extends Room<AirFieldState> {
     }
   
     onJoin (client: Client, options: PlayerJoinOption) {
-      console.log(client.sessionId, "joined!");
+      console.log('[GameRoom]', client.sessionId, "joined!");
       this.state.addPlayer(client.sessionId, options.externalId, options.displayName);
     }
   
     onLeave (client: Client, consented: boolean) {
-      console.log(client.sessionId, "left!");
+      console.log('[GameRoom]',client.sessionId, "left!");
       this.state.removePlayer(client.sessionId);
     }
   
     onDispose() {
-      console.log("room", this.roomId, "disposing...");
+      console.log('[GameRoom]',"room", this.roomId, "disposing...");
     }
   
   }

@@ -51,10 +51,10 @@ export class PlayField extends Scene {
         // register key events 
         var controlBtns = this.input.keyboard?.addKeys('W,S,A,D');
         if(controlBtns) {
-            controlBtns.W.addListener('up',    function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'w'); console.log('sent w'); } else {console.log('jitter w');} });
-            controlBtns.A.addListener('left',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'a'); console.log('sent a'); } else {console.log('jitter a');} });
-            controlBtns.S.addListener('down',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 's'); console.log('sent s'); } else {console.log('jitter s');} });
-            controlBtns.D.addListener('right', function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'd'); console.log('sent d'); } else {console.log('jitter d');}});
+            controlBtns.W.addListener('up',    function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'w'); } });
+            controlBtns.A.addListener('left',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'a'); } });
+            controlBtns.S.addListener('down',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 's'); } });
+            controlBtns.D.addListener('right', function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'd'); } });
         }
         // receive message if LOST / WIN
         room.onMessage("state", (message) => {
