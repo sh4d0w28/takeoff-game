@@ -1,6 +1,8 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import AnimateTextHelper from '../AnimateTextHelper';
+import { Client, Room } from 'colyseus.js';
+import { DirectionEnum } from '../../../common/Enums';
 
 export class Title extends Scene {
     
@@ -36,11 +38,22 @@ export class Title extends Scene {
 
         this.setTween(this.data.get('menulist')[0]);
 
+        var spaceBar = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         var controlBtns = this.input.keyboard?.addKeys('W,S');
         var self = this;
         if(controlBtns) {
             controlBtns.W.addListener('up',    function() { self.menuItem(true); });
             controlBtns.S.addListener('down',  function() { self.menuItem(false); });
+        }
+        if(spaceBar) {
+            spaceBar.addListener('down', function() {
+                var selected = self.data.get('menuselected');
+                if (selected == 0) {
+                    self.createRoom()
+                } else {
+                    self.switchToLobby();
+                }
+            })
         }
     }
     menuItem (goUp:Boolean) {
@@ -61,10 +74,23 @@ export class Title extends Scene {
         this.data.set('menuselected', selected);
     }
     createRoom() {
-
+        var client:Client = this.data.get("GlobalConfig").colyseus;
+        client.joinOrCreate("takeoff_room", { 
+            width: 11,
+            height: 8, 
+            map: "",
+            startPoints:[
+                {x:0,y:0,direction: DirectionEnum.RIGHT }
+            ],
+            externalId: "extId",
+            displayName: "uuname"
+        }).then((room: Room) => {
+            var config: GlobalConfig = this.data.get('GlobalConfig');
+            config.room = room;
+            this.scene.switch('Game', config);
+        });
     }
     switchToLobby() {
-        console.log('switch to lobby');
         this.scene.switch('Lobby', this.data.get('globaldata'));
     }
     update() {
