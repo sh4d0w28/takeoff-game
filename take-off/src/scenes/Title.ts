@@ -1,6 +1,5 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import AnimateTextHelper from '../AnimateTextHelper';
 import { Client, Room } from 'colyseus.js';
 import { DirectionEnum } from '../../../common/Enums';
 
@@ -10,9 +9,9 @@ export class Title extends Scene {
         super("Title");
     }
     init(data: GlobalConfig) {
-        this.data.set('globaldata', data);
-        this.data.set('menulist', []);
-        this.data.set('menuselected', 0);
+        this.data.values.GlobalConfig = data;
+        this.data.values.menulist = [];
+        this.data.values.menuselected = 0;
     }
     preload() {
         this.load.image({
@@ -22,43 +21,46 @@ export class Title extends Scene {
     }
     create ()
     {
+        /** draw basic figures */
         this.add.image(400,300, 'bgImage');
         this.add.rectangle(400, 40, 760, 50, 0x111111, 0.9).setDepth(1);
         this.add.rectangle(270, 320, 500, 450, 0x111111, 0.9).setDepth(1);
         this.add.rectangle(680, 320, 200, 450, 0x111111, 0.9).setDepth(1);
         
+        /** draw menu ( single player / multiplayer ) */
         let singlePlayerText = this.add.text(100, 400, 'SINGLEPLAYER', { fontFamily:"Arial", fontSize:40, color: '#0f0' }).setDepth(2).setInteractive().on('pointerdown', () => this.createRoom() );
         let multiPlayerText = this.add.text(100, 450, 'MULTIPLAYER', { fontFamily:"Arial", fontSize:40, color: '#0f0' }).setDepth(2).setInteractive().on('pointerdown', () => this.switchToLobby() );
         
-        this.setTween(singlePlayerText);
-        this.setTween(multiPlayerText);
+        this.setTween(singlePlayerText).play();
+        this.setTween(multiPlayerText).pause();
 
-        this.data.get('menulist').push(singlePlayerText);
-        this.data.get('menulist').push(multiPlayerText);
+        this.data.values.menulist.push(singlePlayerText);
+        this.data.values.menulist.push(multiPlayerText);
 
-        this.setTween(this.data.get('menulist')[0]);
-
-        var spaceBar = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        var controlBtns = this.input.keyboard?.addKeys('W,S');
+        /** controls processing ( WSAD+SPACE ) */
         var self = this;
-        if(controlBtns) {
-            controlBtns.W.addListener('up',    function() { self.menuItem(true); });
-            controlBtns.S.addListener('down',  function() { self.menuItem(false); });
-        }
-        if(spaceBar) {
-            spaceBar.addListener('down', function() {
-                var selected = self.data.get('menuselected');
-                if (selected == 0) {
-                    self.createRoom()
-                } else {
-                    self.switchToLobby();
-                }
-            })
-        }
+        this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).addListener('down', function() {
+            var selected = self.data.values.menuselected;
+            if (selected == 0) {
+                console.log('createRoom');
+                self.createRoom()
+            } else {
+                console.log('switchLobby');
+                self.switchToLobby();
+            }
+        });
+        this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W).addListener('down', function() {
+            self._menuItem(true);
+        });
+        this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S).addListener('down', function() {
+            self._menuItem(false);
+        })
     }
-    menuItem (goUp:Boolean) {
-        let selected:number = this.data.get('menuselected');
-        let menulist:Phaser.GameObjects.Text[] = this.data.get('menulist')
+
+    // menu up / down ( cycle )
+    _menuItem (goUp:Boolean) {
+        let selected:number = this.data.values.menuselected;
+        let menulist:Phaser.GameObjects.Text[] = this.data.values.menulist;
         if(goUp) {
             selected -= 1;
             if (selected < 0 ) {
@@ -70,42 +72,47 @@ export class Title extends Scene {
                 selected = 0;
             }
         }
-        console.log(selected, menulist);
-        this.data.set('menuselected', selected);
+        menulist.forEach((obj:Phaser.GameObjects.Text ,i:number) => {
+            if(this.tweens.getTweensOf(obj).length > 0) {
+                if(i == selected) {
+                    this.tweens.getTweensOf(obj)[0].play();
+                } else {
+                    this.tweens.getTweensOf(obj)[0].restart().pause();
+                }
+            }
+        });
+        this.data.values.menuselected = selected;
     }
+
+    /** create new default room  */
     createRoom() {
-        var client:Client = this.data.get("GlobalConfig").colyseus;
+        var client:Client = this.data.values.GlobalConfig.colyseus;
         client.joinOrCreate("takeoff_room", { 
             width: 11,
             height: 8, 
-            map: "",
+            map: "┌┐┌┐┌┐┌┐┌┐*" 
+            + "│└┼┼┼┼┼┼┘│║"
+            + "│┌┼┼┼┼┼┼┐│║"
+            + "││└┼┼┼┼┘┼┘║"
+            + "││┌┼┼┼┼┼┼┐║"
+            + "│└┼┼┼┼┼┼┼│║"
+            + "│┌┼┼┼┼┼┼┼│║"
+            + "└┘└┘└┘└┘└┴┘",
             startPoints:[
                 {x:0,y:0,direction: DirectionEnum.RIGHT }
             ],
             externalId: "extId",
             displayName: "uuname"
         }).then((room: Room) => {
-            var config: GlobalConfig = this.data.get('GlobalConfig');
+            var config: GlobalConfig = this.data.values.GlobalConfig;
             config.room = room;
             this.scene.switch('Game', config);
         });
     }
     switchToLobby() {
-        this.scene.switch('Lobby', this.data.get('globaldata'));
+        this.scene.switch('Lobby', this.data.values.GlobalConfig);
     }
-    update() {
-        var menuselected = this.data.get('menuselected');
-        this.data.get('menulist').forEach((obj:Phaser.GameObjects.Text ,i:number) => {
-            if(this.tweens.getTweensOf(obj).length > 0) {
-                if(i == menuselected) {
-                    this.tweens.getTweensOf(obj)[0].play();
-                } else {
-                    this.tweens.getTweensOf(obj)[0].pause();
-                }
-            }
-        });
-    }
-
+ 
     setTween(el: Phaser.GameObjects.Text) {
         return this.tweens.add({
             targets: el,
