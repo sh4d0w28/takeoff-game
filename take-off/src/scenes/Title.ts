@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Client, Room } from 'colyseus.js';
 import { DirectionEnum } from '../../../common/Enums';
+import {Map1}  from '../../../common/Maps';
 
 export class Title extends Scene {
     
@@ -88,19 +89,10 @@ export class Title extends Scene {
     createRoom() {
         var client:Client = this.data.values.GlobalConfig.colyseus;
         client.joinOrCreate("takeoff_room", { 
-            width: 11,
-            height: 8, 
-            map: "┌┐┌┐┌┐┌┐┌┐*" 
-            + "│└┼┼┼┼┼┼┘│║"
-            + "│┌┼┼┼┼┼┼┐│║"
-            + "││└┼┼┼┼┘┼┘║"
-            + "││┌┼┼┼┼┼┼┐║"
-            + "│└┼┼┼┼┼┼┼│║"
-            + "│┌┼┼┼┼┼┼┼│║"
-            + "└┘└┘└┘└┘└┴┘",
-            startPoints:[
-                {x:0,y:0,direction: DirectionEnum.RIGHT }
-            ],
+            width: Map1.width,
+            height: Map1.height,
+            map: Map1.map.join(),
+            startPoints: Map1.startPoints,
             externalId: "extId",
             displayName: "uuname"
         }).then((room: Room) => {
