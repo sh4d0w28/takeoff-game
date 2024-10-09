@@ -11,6 +11,7 @@ export class GameRoom extends Room<AirFieldState> {
     public delayedInterval!: Delayed;
 
     onCreate (options: AirFieldStateOption) {
+      this.autoDispose = false;
       this.setState(new AirFieldState(options));
       this.clock.start();
       
@@ -43,6 +44,9 @@ export class GameRoom extends Room<AirFieldState> {
   
     onLeave (client: Client, consented: boolean) {
       console.log('[GameRoom]',client.sessionId, "left!");
+      if(this.clients.length == 0) {
+        this.autoDispose = true;
+      }
       this.state.removePlayer(client.sessionId);
     }
   

@@ -6,8 +6,7 @@ import { playground } from "@colyseus/playground";
  * Import your Room files
  */
 import { GameRoom } from "./take_off_game/rooms/GameRoom.js";
-import { LobbyRoom } from "colyseus";
-import { PlaneStateEnum } from "../../common/Enums.js";
+import { GLobbyRoom } from "./take_off_game/rooms/GLobbyRoom.js";
 
 export default config({
 
@@ -16,7 +15,7 @@ export default config({
          * Define your room handlers:
          */
         gameServer.define('takeoff_room', GameRoom).enableRealtimeListing();
-        gameServer.define("takeoff_lobby", LobbyRoom).enableRealtimeListing();
+        gameServer.define("takeoff_lobby", GLobbyRoom).enableRealtimeListing();
     },
 
     initializeExpress: (app) => {
