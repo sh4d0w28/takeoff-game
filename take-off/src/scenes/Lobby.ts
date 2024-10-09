@@ -1,7 +1,6 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Client, Room } from 'colyseus.js';
-import { DirectionEnum } from '../../../common/Enums'
 import { Map1 } from '../../../common/Maps';
 
 export class Lobby extends Scene {   
@@ -102,12 +101,12 @@ export class Lobby extends Scene {
                 .setOrigin(0.5).setDepth(2).setInteractive();
 
             // Add room name and user count text
-            const text = `${room.roomId} (${room.clients} users)`;
+            const text = `${roomId} (${room.clients} users)`;
             this.add.text(270, yPosition, text, { fontSize: '20px', color: '#ffffff' }).setOrigin(0.5).setDepth(4);
 
             // Add interactive listener for room selection
             roomRectangle.on('pointerdown', () => {
-                this._joinGame(room.roomId)
+                this._joinGame(roomId)
                 // Handle room selection logic here
             });
 

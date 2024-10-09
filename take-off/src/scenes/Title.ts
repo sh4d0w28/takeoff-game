@@ -1,7 +1,6 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Client, Room } from 'colyseus.js';
-import { DirectionEnum } from '../../../common/Enums';
 import {Map1}  from '../../../common/Maps';
 
 export class Title extends Scene {
