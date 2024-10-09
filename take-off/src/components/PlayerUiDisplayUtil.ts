@@ -7,6 +7,21 @@ export default class PlayerUiDisplayUtil {
     readonly w:number;
     readonly h:number;
 
+    public static readonly SPEED_PRORGRESS_SPRITESHEET = 'speedProgressSpriteSheet';
+    public static readonly SPEED_PRORGRESS_SPRITEFILE = 'assets/score_display.bmp'; 
+    
+    public registerSpriteSheet() {
+        this.scene.load.spritesheet({
+            key: PlayerUiDisplayUtil.SPEED_PRORGRESS_SPRITESHEET,
+            url: PlayerUiDisplayUtil.SPEED_PRORGRESS_SPRITEFILE,
+            frameConfig: {
+                frameWidth: 4,
+                frameHeight: 7,
+                spacing: 1
+            }
+        });
+    }
+
     public constructor(s: Phaser.Scene, tsize :number, w:number, h:number) {
         this.scene = s;
         this.tSize = tsize;
@@ -45,6 +60,10 @@ export default class PlayerUiDisplayUtil {
 
         this.drawSpeedAndScore(fieldLeftX, fieldTopY, sessionId, state);
         this.drawPlayersScores(fieldLeftX, fieldTopY + (state.rows * this.tSize), state)
+
+        for(var i = 0; i<10; i++) {
+            this.scene.data.set('speed_prog_'+i, this.scene.add.sprite(fieldLeftX-30 + i * 5, fieldTopY-30,'speedProgressSpriteSheet', 0).setDepth(4));
+        }
     }
 
     private drawPlayersScores(leftX: number, topY: number, state: any) {
@@ -81,13 +100,20 @@ export default class PlayerUiDisplayUtil {
      */
     private drawSpeedAndScore(leftX:number, topY:number, sessionId:string, state: any) {       
         if(!this.scene.data.get('speed')) {
-            this.scene.data.set('speed', this.scene.add.text(leftX, topY-30, 'speed').setDepth(3));
+            this.scene.data.set('speed', this.scene.add.text(leftX, topY-80, 'speed').setDepth(3));
         }
         let speedCtrl:Phaser.GameObjects.Text = this.scene.data.get('speed');
         let myPlane = state.planes.get(sessionId);
         if(myPlane.currentSpeed >= myPlane.takeOffSpeed) {
             speedCtrl.setText('SPEED ACHIEVED! GO TO RUNWAY!');
         } else {
+            var dat:integer = myPlane.currentSpeed * 10 / myPlane.takeOffSpeed
+            for(var i = 0; i< 10; i++) {
+                if(this.scene.data.has('speed_prog_'+i)) {
+                    var s:Phaser.GameObjects.Sprite = this.scene.data.get('speed_prog_'+i);
+                    if(i < dat) { s.setFrame(1); } else { s.setFrame(0); }
+                }
+            }
             speedCtrl.setText('speed: ' + myPlane.currentSpeed + " / " + myPlane.takeOffSpeed);
         }
     }

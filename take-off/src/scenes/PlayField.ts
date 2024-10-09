@@ -30,6 +30,7 @@ export class PlayField extends Scene {
         this.groundDisplayUtil.registerSpriteSheet();
         this.planeDisplayUtil.registerSpriteSheet();
         this.bonusDisplayUtil.registerSpriteSheet();
+        this.playerUiDisplayUtil.registerSpriteSheet();
     }
 
     init(data: GlobalConfig) {
