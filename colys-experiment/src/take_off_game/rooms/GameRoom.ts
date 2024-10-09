@@ -9,11 +9,10 @@ export class GameRoom extends Room<AirFieldState> {
     maxClients = 6;
     
     public delayedInterval!: Delayed;
-  
+
     onCreate (options: AirFieldStateOption) {
       this.setState(new AirFieldState(options));
       this.clock.start();
-  
       
       this.onMessage("wasd", (client, message:string) => {
         switch(message.toLowerCase()) {

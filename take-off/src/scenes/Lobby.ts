@@ -24,8 +24,7 @@ export class Lobby extends Scene {
          /** draw basic figures */
         this.add.image(400,300, 'bgImage');
         this.add.rectangle(400, 40, 760, 50, 0x111111, 0.9).setDepth(1);
-        this.add.rectangle(270, 320, 500, 450, 0x111111, 0.9).setDepth(1);
-        this.add.rectangle(680, 320, 200, 450, 0x111111, 0.9).setDepth(1);
+        this.add.rectangle(400, 320, 760, 450, 0x111111, 0.9).setDepth(1);
          
         this.data.values.takeoff_rooms = {};
         this.data.values.takeoff_rooms_graphics = {};
@@ -90,14 +89,21 @@ export class Lobby extends Scene {
     _redraw_rooms() {
         
         const roomHeight = 50;
+        const roomWidth = 230;
+        const roomWPadding = 35;
         const roomPadding = 10;
         var index = 0;
 
         Object.entries(this.data.values.takeoff_rooms).forEach(([roomId,room]: any) => {
 
-            const yPosition = index++ * (roomHeight + roomPadding) + 150; // Adjust vertical position
+            var row = index / 3;
+            var column = index % 3;
+
+            const xPosition = column * (roomWidth + roomWPadding) + 20;
+            const yPosition = row * (roomHeight + roomPadding) + 150; 
+
             // Create rounded rectangle for the room
-            const roomRectangle = this.add.rectangle(270, yPosition, 450, roomHeight, 0x660000, 1)
+            const roomRectangle = this.add.rectangle(xPosition, yPosition, roomWidth, roomHeight, 0x660000, 1)
                 .setOrigin(0.5).setDepth(2).setInteractive();
 
             // Add room name and user count text
