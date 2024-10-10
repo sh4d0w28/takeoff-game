@@ -1,7 +1,7 @@
 import { Title } from './scenes/Title.ts'; 
 import { Lobby } from './scenes/Lobby.ts';
 import {PlayField} from './scenes/PlayField.ts';
-import { AUTO, Game, Scale,Types } from 'phaser';
+import { AUTO, Scale,Types } from 'phaser';
 import * as Colyseus from "colyseus.js";
 import GlobalConfig from './GlobalConfig.ts';
 
@@ -12,7 +12,7 @@ const config: Types.Core.GameConfig = {
     width: 800,
     height: 600,
     parent: 'game-container',
-    backgroundColor: '#111111',
+    backgroundColor: '#222222',
     scale: {
         mode: Scale.FIT,
         autoCenter: Scale.CENTER_BOTH
@@ -22,11 +22,12 @@ const config: Types.Core.GameConfig = {
     ]
 };
 
+/** create client instance to pass across all scenes */
 const client = new Colyseus.Client('ws://localhost:2567');
 
-const sharedConfig: GlobalConfig = {
+const globalConfig: GlobalConfig = {
     colyseus: client
 }
 
 const game = new Phaser.Game(config);
-game.scene.start('Title', sharedConfig);
+game.scene.start('Title', globalConfig);
