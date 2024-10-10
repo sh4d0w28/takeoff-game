@@ -82,9 +82,9 @@ export class PlayField extends Scene {
         }
         var state = this.data.get("state");
 
-        this.planeDisplayUtil.drawPlanes(state);
-        this.groundDisplayUtil.drawGroundTiles(state);
-        this.bonusDisplayUtil.drawBonuses(state);
+        // this.planeDisplayUtil.drawPlanes(state);
+        // this.groundDisplayUtil.drawGroundTiles(state);
+        // this.bonusDisplayUtil.drawBonuses(state);
         this.playerUiDisplayUtil.drawGUI(state);
     }
 }

@@ -129,6 +129,7 @@ export class Lobby extends Scene {
         });
     }
 
+    /** send message to server to make an empty room to join */
     _createRoom(){
         var config:GlobalConfig = this.data.values.GlobalConfig;
         config.room?.send("new", { 
@@ -139,23 +140,31 @@ export class Lobby extends Scene {
         });
     }
     
+    /** receive 'new room' from server */
     onAddRoom(roomId: any, room: any) {
         console.log('add rooms');
         this.data.values.takeoff_rooms[roomId] = room;
         this._redraw_rooms()
     }
+
+    /** receive 'room removed' from server */
     onRemoveRoom(roomId: any) {
         console.log('remove rooms');
         delete this.data.values.takeoff_rooms[roomId];
         this._redraw_rooms()
     }
+
+    /** receive initial rooms list */
     _rooms(rooms: any) {
         console.log('rooms');
         this.data.values.takeoff_rooms = rooms;
         this._redraw_rooms()
     }
+
+    /** leave lobby */
     _leave() {console.log('[lobby] Leaving lobby')}
 
+    /** re-draw rooms after update */
     _redraw_rooms() {
         var ids:string[] = [];
         this.data.values.takeoff_rooms_graphics["NEW"] = new RoomRect(this, 20, 120, ids.length, null);
@@ -177,6 +186,7 @@ export class Lobby extends Scene {
         Object.values(this.data.values.takeoff_rooms_graphics).forEach(r => r.setPos(20,120, i++));
     }
 
+    /** join game and move to next screen ( instant ) */
     _joinGame(roomId: string) {
         var config: GlobalConfig = this.data.values.GlobalConfig;
         if (roomId) {
