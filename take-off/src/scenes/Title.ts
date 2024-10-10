@@ -1,15 +1,16 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Client, Room } from 'colyseus.js';
-import {Map1}  from '../../../common/Maps';
+import { Map1 }  from '../../../common/Maps';
 
 export class Title extends Scene {
-    
+
     constructor() {
         super("Title");
     }
     init(data: GlobalConfig) {
-        this.data.values.GlobalConfig = data;
+        this.data.set(GlobalConfig.KEY, data);
+        
         this.data.values.menulist = [];
         this.data.values.menuselected = 0;
     }
@@ -22,14 +23,14 @@ export class Title extends Scene {
     create ()
     {
         /** draw basic figures */
-        this.add.image(400,300, 'bgImage');
-        this.add.rectangle(400, 40, 760, 50, 0x111111, 0.9).setDepth(1);
-        this.add.rectangle(270, 320, 500, 450, 0x111111, 0.9).setDepth(1);
-        this.add.rectangle(680, 320, 200, 450, 0x111111, 0.9).setDepth(1);
+        //this.add.image(0,0, 'bgImage').setOrigin(0);
+        this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(1);
+        this.add.rectangle(20, 120, 500, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
+        this.add.rectangle(550, 120, 800 - 20 - 550, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
         
         /** draw menu ( single player / multiplayer ) */
-        let singlePlayerText = this.add.text(100, 400, 'SINGLEPLAYER', { fontFamily:"Arial", fontSize:40, color: '#0f0' }).setDepth(2).setInteractive().on('pointerdown', () => this.createRoom() );
-        let multiPlayerText = this.add.text(100, 450, 'MULTIPLAYER', { fontFamily:"Arial", fontSize:40, color: '#0f0' }).setDepth(2).setInteractive().on('pointerdown', () => this.switchToLobby() );
+        let singlePlayerText = this.add.text(20+250, 400, 'Start SinglePlayer', { fontFamily:"arcadepi", fontSize:30, color: '#030' }).setOrigin(0.5).setDepth(2).setInteractive().on('pointerdown', () => this._startSinglePlayer() );
+        let multiPlayerText =  this.add.text(20+250, 450, 'Go To Lobby', { fontFamily:"arcadepi", fontSize:30, color: '#030' }).setOrigin(0.5).setDepth(2).setInteractive().on('pointerdown', () => this._goToLobby() );
         
         this.setTween(singlePlayerText).play();
         this.setTween(multiPlayerText).pause();
@@ -42,11 +43,9 @@ export class Title extends Scene {
         this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).addListener('down', function() {
             var selected = self.data.values.menuselected;
             if (selected == 0) {
-                console.log('createRoom');
-                self.createRoom()
+                self._startSinglePlayer()
             } else {
-                console.log('switchLobby');
-                self.switchToLobby();
+                self._goToLobby();
             }
         });
         this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W).addListener('down', function() {
@@ -85,31 +84,31 @@ export class Title extends Scene {
     }
 
     /** create new default room  */
-    createRoom() {
-        var client:Client = this.data.values.GlobalConfig.colyseus;
+    _startSinglePlayer() {
+        var client:Client = this.data.get(GlobalConfig.KEY).colyseus;
         client.joinOrCreate("takeoff_room", { 
-            width: Map1.width,
-            height: Map1.height,
-            map: Map1.map.join(),
-            startPoints: Map1.startPoints,
-            externalId: "extId",
-            displayName: "uuname"
+            width: Map1.width
+          , height: Map1.height
+          , map: Map1.map.join()
+          , startPoints: Map1.startPoints
+          //, externalId: ""
+          //, displayName: ""
         }).then((room: Room) => {
-            var config: GlobalConfig = this.data.values.GlobalConfig;
+            var config: GlobalConfig = this.data.get(GlobalConfig.KEY);
             config.room = room;
             this.scene.switch('Game', config);
         });
     }
-    switchToLobby() {
-        this.scene.switch('Lobby', this.data.values.GlobalConfig);
+    _goToLobby() {
+        this.scene.switch('Lobby', this.data.get(GlobalConfig.KEY));
     }
  
     setTween(el: Phaser.GameObjects.Text) {
         return this.tweens.add({
             targets: el,
-            alpha: 0,
-            ease: 'Cubic.easeOut',  
-            duration: 500,
+            alpha: 0.5,
+            ease: '',  
+            duration: 300,
             repeat: -1,
             yoyo: true
         });

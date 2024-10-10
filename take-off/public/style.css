@@ -1,3 +1,10 @@
+@font-face {
+    font-family: arcadepi;
+    src: url('assets/fonts/ARCADEPI.TTF');
+    font-weight:400;
+    font-weight:normal;
+}
+
 body {
     margin: 0;
     padding: 0;

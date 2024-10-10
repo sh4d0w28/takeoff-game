@@ -1,8 +1,85 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import { Client, Room } from 'colyseus.js';
+import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { Map1 } from '../../../common/Maps';
 
+
+class RoomRect {
+
+    private rect: Phaser.GameObjects.Rectangle;
+    private name: Phaser.GameObjects.Text;
+    private players: Phaser.GameObjects.Text;
+    private roomId: string;
+    
+    /**
+     * 
+     * @param dx left of ext container
+     * @param dy top of ext container
+     * @param ind index of elemen
+     * @param room data
+     */
+    constructor(scene:Lobby, dx:number,dy:number,ind: number, room:any) {
+        const rw = 170;
+        const rh = 120;
+        const padx = 10;
+        const pady = 20;
+        const itemsInRow = 4;
+        
+        var cellx = dx + 20 + ( padx + rw ) * (ind % itemsInRow);
+        var celly = dy + 20 + ( pady + rh ) * Math.trunc(ind / itemsInRow);
+        
+        this.rect = scene.add.rectangle(cellx, celly, rw, rh, 0x333333).setOrigin(0).setInteractive();
+
+        if (room) {
+            this.roomId = room.roomId;
+            this.name = scene.add.text(cellx+(rw/2), celly+10, room.roomId, { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
+            this.players = scene.add.text(cellx+(rw/2), celly+30, room.clients + " users", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
+        } else {
+            this.name = scene.add.text(cellx+(rw/2), celly+10, "NEW", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
+            this.players = scene.add.text(cellx+(rw/2), celly+30, "", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
+        }
+
+        // Add interactive listeners
+        this.rect.on('pointerdown', () => {
+            if(this.roomId) {
+                scene._joinGame(this.roomId)
+            } else {
+                scene._createRoom();
+            }
+        });
+        this.rect.on('pointerover', () => {
+            this.rect.setFillStyle(0x0056b3);
+        });
+        this.rect.on('pointerout', () => {
+            this.rect.setFillStyle(0x333333);
+        });          
+    }
+
+    setPlayers(players: number)  {
+        this.players.setText(players + " users");
+    }
+
+    setPos(dx:number,dy:number, ind:  number) {
+        const rw = 170;
+        const rh = 120;
+        const padx = 10;
+        const pady = 20;
+        const itemsInRow = 4;
+        
+        var cellx = dx + 20 + ( padx + rw ) * (ind % itemsInRow);
+        var celly = dy + 20 + ( pady + rh ) * Math.trunc(ind / itemsInRow);
+        
+        this.rect.setPosition(cellx, celly);
+        this.name.setPosition(cellx+(rw/2), celly+10);
+        this.players.setPosition(cellx+(rw/2), celly+30);
+    }
+
+    delete() {
+        this.rect.destroy();
+        this.name.destroy();
+        this.players.destroy();
+    }
+}
 export class Lobby extends Scene {   
 
     constructor() {
@@ -11,6 +88,8 @@ export class Lobby extends Scene {
 
     init(data: GlobalConfig) {
         this.data.values.GlobalConfig = data;
+        this.data.values.takeoff_rooms_graphics = {}
+        this.data.values.takeoff_rooms = {};
     }
 
     preload() {
@@ -21,117 +100,90 @@ export class Lobby extends Scene {
     }
 
     create() {
-         /** draw basic figures */
-        this.add.image(400,300, 'bgImage');
-        this.add.rectangle(400, 40, 760, 50, 0x111111, 0.9).setDepth(1);
-        this.add.rectangle(400, 320, 760, 450, 0x111111, 0.9).setDepth(1);
-         
-        this.data.values.takeoff_rooms = {};
-        this.data.values.takeoff_rooms_graphics = {};
 
-        this.add.text(100,150, 'New Room', { color: '#f00'})
-            .setInteractive()
-            .on('pointerdown', () => this._createRoom() );
+        /** draw basic figures */
+        //this.add.image(0,0, 'bgImage').setOrigin(0);
+        this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(1);
+        this.add.rectangle(20, 120, 760, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
 
         // event processing
         var client:Client = this.data.values.GlobalConfig.colyseus;
 
-        client.joinOrCreate("takeoff_lobby").then((lobby_room) => {
+        client.getAvailableRooms("takeoff_lobby").then((rooms:RoomAvailable[]) => {
+            var lobbyRoomId = rooms[0].roomId;
+            console.log('found lobby room!');
+            client.joinById(lobbyRoomId).then((lobby_room) => {
         
-            lobby_room.onMessage("rooms", (rooms) => { this._rooms(rooms); } );
-            lobby_room.onMessage("+", ([roomId, room]) => { this._plusroom(roomId, room); });
-            lobby_room.onMessage("-", (roomId) => { this._minusroom(roomId); });
-            lobby_room.onLeave(() => { this._leave(); });  
-
-            console.log("Joined lobby room!");
-        })
-        .catch((e) => {
-            console.error("Error", e);
+                this.data.values.GlobalConfig.room = lobby_room;
+    
+                lobby_room.onMessage("rooms", (rooms) => { this._rooms(rooms); } );
+                lobby_room.onMessage("+", ([roomId, room]) => { this.onAddRoom(roomId, room); });
+                lobby_room.onMessage("-", (roomId) => { this.onRemoveRoom(roomId); });
+                lobby_room.onLeave(() => { this._leave(); });  
+    
+                console.log("Joined lobby room!");
+            })
+            .catch((e) => {
+                console.error("Error", e);
+            });    
         });
     }
 
     _createRoom(){
-        var client:Client = this.data.values.GlobalConfig.colyseus;
-        client.joinOrCreate("takeoff_room", { 
+        var config:GlobalConfig = this.data.values.GlobalConfig;
+        config.room?.send("new", { 
             width: Map1.width,
             height: Map1.height,
             map: Map1.map.join(),
-            startPoints: Map1.startPoints,
-            externalId: "extId",
-            displayName: "uuname"
-        }).then((room: Room) => {
-            var config: GlobalConfig = this.data.values.GlobalConfig;
-            config.room = room;
-            this.scene.switch('Game', config);
+            startPoints: Map1.startPoints
         });
     }
-    _plusroom(roomId: any, room: any) {
+    
+    onAddRoom(roomId: any, room: any) {
+        console.log('add rooms');
         this.data.values.takeoff_rooms[roomId] = room;
-        this.data.values.takeoff_rooms_graphics[roomId] = {
-            rect: this.add.rectangle(270, 0, 450, 50, 0x660000, 1).setOrigin(0.5).setDepth(2).setInteractive(),
-            text: this.add.text(270, 0, "", { fontSize: '20px', color: '#ffffff' }).setOrigin(0.5).setDepth(4)
-        };
         this._redraw_rooms()
     }
-    _minusroom(roomId: any) {
+    onRemoveRoom(roomId: any) {
+        console.log('remove rooms');
         delete this.data.values.takeoff_rooms[roomId];
-        this.data.values.takeoff_rooms_graphics[roomId].text.destroy();
-        this.data.values.takeoff_rooms_graphics[roomId].rect.destroy();
-        delete this.data.values.takeoff_rooms_graphics[roomId];
         this._redraw_rooms()
     }
     _rooms(rooms: any) {
+        console.log('rooms');
         this.data.values.takeoff_rooms = rooms;
         this._redraw_rooms()
     }
     _leave() {console.log('[lobby] Leaving lobby')}
 
     _redraw_rooms() {
+        var ids:string[] = [];
+        this.data.values.takeoff_rooms_graphics["NEW"] = new RoomRect(this, 20, 120, ids.length, null);
         
-        const roomHeight = 50;
-        const roomWidth = 230;
-        const roomWPadding = 35;
-        const roomPadding = 10;
-        var index = 0;
-
-        Object.entries(this.data.values.takeoff_rooms).forEach(([roomId,room]: any) => {
-
-            var row = index / 3;
-            var column = index % 3;
-
-            const xPosition = column * (roomWidth + roomWPadding) + 20;
-            const yPosition = row * (roomHeight + roomPadding) + 150; 
-
-            // Create rounded rectangle for the room
-            const roomRectangle = this.add.rectangle(xPosition, yPosition, roomWidth, roomHeight, 0x660000, 1)
-                .setOrigin(0.5).setDepth(2).setInteractive();
-
-            // Add room name and user count text
-            const text = `${roomId} (${room.clients} users)`;
-            this.add.text(270, yPosition, text, { fontSize: '20px', color: '#ffffff' }).setOrigin(0.5).setDepth(4);
-
-            // Add interactive listener for room selection
-            roomRectangle.on('pointerdown', () => {
-                this._joinGame(roomId)
-                // Handle room selection logic here
-            });
-
-            // Optional: Change color on hover
-            roomRectangle.on('pointerover', () => {
-                roomRectangle.setFillStyle(0x0056b3);
-            });
-
-            roomRectangle.on('pointerout', () => {
-                roomRectangle.setFillStyle(0x007bff);
-            });          
-        })
+        Object.entries(this.data.values.takeoff_rooms).forEach(([i,room]: any) => {
+            ids.push(room.roomId);
+            if(!this.data.values.takeoff_rooms_graphics[room.roomId]) {
+                this.data.values.takeoff_rooms_graphics[room.roomId] = new RoomRect(this, 20, 120, -1, room);
+            } else {
+                this.data.values.takeoff_rooms_graphics[room.roomId].setPlayers(room.clients);
+            }
+        });
+        Object.keys(this.data.values.takeoff_rooms_graphics).filter((v)=> ids.indexOf(v)==-1).forEach((v) => {
+            this.data.values.takeoff_rooms_graphics[v].delete();
+            delete this.data.values.takeoff_rooms_graphics[v];
+        });
+        
+        var i = 0;
+        Object.values(this.data.values.takeoff_rooms_graphics).forEach(r => r.setPos(20,120, i++));
     }
 
     _joinGame(roomId: string) {
         var config: GlobalConfig = this.data.values.GlobalConfig;
-        config.colyseus.joinById(roomId, {}).then((room) => {
-            config.room = room;
-            this.scene.switch('Game', config);
-        });
+        if (roomId) {
+            config.colyseus.joinById(roomId, {}).then((room) => {
+                config.room = room;
+                this.scene.switch('Game', config);
+            });
+        }
     }
 }

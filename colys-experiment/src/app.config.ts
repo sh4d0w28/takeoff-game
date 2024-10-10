@@ -7,6 +7,7 @@ import { playground } from "@colyseus/playground";
  */
 import { GameRoom } from "./take_off_game/rooms/GameRoom.js";
 import { GLobbyRoom } from "./take_off_game/rooms/GLobbyRoom.js";
+import { matchMaker } from "colyseus";
 
 export default config({
 
@@ -16,6 +17,8 @@ export default config({
          */
         gameServer.define('takeoff_room', GameRoom).enableRealtimeListing();
         gameServer.define("takeoff_lobby", GLobbyRoom).enableRealtimeListing();
+        
+        matchMaker.create("takeoff_lobby");
     },
 
     initializeExpress: (app) => {
