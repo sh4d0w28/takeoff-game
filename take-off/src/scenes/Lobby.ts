@@ -102,7 +102,7 @@ export class Lobby extends Scene {
     create() {
 
         /** draw basic figures */
-        //this.add.image(0,0, 'bgImage').setOrigin(0);
+        this.add.image(0,0, 'bgImage').setOrigin(0);
         this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(1);
         this.add.rectangle(20, 120, 760, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
 
@@ -166,9 +166,8 @@ export class Lobby extends Scene {
 
     /** re-draw rooms after update */
     _redraw_rooms() {
-        var ids:string[] = [];
+        var ids:string[] = ["NEW"];
         this.data.values.takeoff_rooms_graphics["NEW"] = new RoomRect(this, 20, 120, ids.length, null);
-        
         Object.entries(this.data.values.takeoff_rooms).forEach(([i,room]: any) => {
             ids.push(room.roomId);
             if(!this.data.values.takeoff_rooms_graphics[room.roomId]) {

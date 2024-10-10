@@ -28,7 +28,7 @@ export class PlayField extends Scene {
         });
         
         this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
-        this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h);
+        this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h, 60, 160);
         this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
         this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
 
@@ -43,6 +43,11 @@ export class PlayField extends Scene {
     }
 
     create() {
+
+        this.add.image(0,0, 'bgImage').setOrigin(0);
+        this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(0);
+        this.add.rectangle(20, 120, 500, 450, 0x111111, 0.9).setOrigin(0).setDepth(0);
+        this.add.rectangle(550, 120, 800 - 20 - 550, 450, 0x111111, 0.9).setOrigin(0).setDepth(0);
 
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();
@@ -87,9 +92,9 @@ export class PlayField extends Scene {
         }
         var state = this.data.get("state");
 
-        // this.planeDisplayUtil.drawPlanes(state);
-        // this.groundDisplayUtil.drawGroundTiles(state);
-        // this.bonusDisplayUtil.drawBonuses(state);
+        this.planeDisplayUtil.drawPlanes(state);
+        this.groundDisplayUtil.drawGroundTiles(state);
+        this.bonusDisplayUtil.drawBonuses(state);
         this.playerUiDisplayUtil.drawGUI(state);
     }
 }

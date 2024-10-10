@@ -6,15 +6,19 @@ export default class GroundDisplayUtil {
     readonly scene: Phaser.Scene;
     readonly w:number;
     readonly h:number;
+    readonly top:number;
+    readonly left:number;
 
     private static readonly GROUND_TILE_SPRITESHEET = 'roadSpriteSheet';
     public static readonly GROUND_TILE_SPRITEFILE = 'assets/roadsprite.bmp';
 
-    public constructor(s: Phaser.Scene, tsize: number, w:number, h:number) {
+    public constructor(s: Phaser.Scene, tsize: number, w:number, h:number, left:number, top:number){
         this.scene = s;
         this.tSize = tsize;
         this.w = w;
         this.h = h;
+        this.top = top;
+        this.left = left;
 
         // no saving required
     }
