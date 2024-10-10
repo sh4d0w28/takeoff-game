@@ -22,6 +22,11 @@ export class PlayField extends Scene {
     }
 
     preload() {
+        this.load.image({
+            key: "bgImage",
+            url: 'assets/images/bg.png'
+        });
+        
         this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
         this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h);
         this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
