@@ -23,7 +23,7 @@ export class Title extends Scene {
     create ()
     {
         /** draw basic figures */
-        this.add.image(0,0, 'bgImage').setOrigin(0);
+        //this.add.image(0,0, 'bgImage').setOrigin(0);
         this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(1);
         this.add.rectangle(20, 120, 500, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
         this.add.rectangle(550, 120, 800 - 20 - 550, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);

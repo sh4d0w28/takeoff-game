@@ -32,11 +32,13 @@ class RoomRect {
 
         if (room) {
             this.roomId = room.roomId;
-            this.name = scene.add.text(cellx+(rw/2), celly+10, room.roomId, { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
-            this.players = scene.add.text(cellx+(rw/2), celly+30, room.clients + " users", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
+            this.rect.setName(room.roomId);
+            this.name = scene.add.text(cellx+(rw/2), celly+10, room.roomId, { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5).setName(room.roomId + "_name");
+            this.players = scene.add.text(cellx+(rw/2), celly+30, room.clients + " users", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5).setName(room.roomId + "_clients");
         } else {
-            this.name = scene.add.text(cellx+(rw/2), celly+10, "NEW", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
-            this.players = scene.add.text(cellx+(rw/2), celly+30, "", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5);
+            this.rect.setName("NEW");
+            this.name = scene.add.text(cellx+(rw/2), celly+10, "NEW", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5).setName("NEW_name");
+            this.players = scene.add.text(cellx+(rw/2), celly+30, "", { fontFamily:'arcadepi', fontSize: '10px', color: '#fff' }).setOrigin(0.5).setName("NEW_clients");
         }
 
         // Add interactive listeners
@@ -102,7 +104,7 @@ export class Lobby extends Scene {
     create() {
 
         /** draw basic figures */
-        this.add.image(0,0, 'bgImage').setOrigin(0);
+        //this.add.image(0,0, 'bgImage').setOrigin(0);
         this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(1);
         this.add.rectangle(20, 120, 760, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
 
@@ -135,7 +137,7 @@ export class Lobby extends Scene {
         config.room?.send("new", { 
             width: Map1.width,
             height: Map1.height,
-            map: Map1.map.join(),
+            map: Map1.map.join(""),
             startPoints: Map1.startPoints
         });
     }
@@ -166,8 +168,21 @@ export class Lobby extends Scene {
 
     /** re-draw rooms after update */
     _redraw_rooms() {
-        var ids:string[] = ["NEW"];
-        this.data.values.takeoff_rooms_graphics["NEW"] = new RoomRect(this, 20, 120, ids.length, null);
+        var ids:string[] = [];
+        if (Object.keys(this.data.values.takeoff_rooms).length < 12) {
+            console.log('make new');
+            ids.push("NEW");
+            if(!this.data.values.takeoff_rooms_graphics["NEW"]) {
+                this.data.values.takeoff_rooms_graphics["NEW"] = new RoomRect(this, 20, 120, ids.length, null);
+            }
+        } else {
+            if(this.data.values.takeoff_rooms_graphics["NEW"]) {
+                this.data.values.takeoff_rooms_graphics["NEW"].delete();
+                delete this.data.values.takeoff_rooms_graphics["NEW"];
+            }
+        }
+        console.log(ids, this.data.values.takeoff_rooms, this.data.values.takeoff_rooms_graphics);
+
         Object.entries(this.data.values.takeoff_rooms).forEach(([i,room]: any) => {
             ids.push(room.roomId);
             if(!this.data.values.takeoff_rooms_graphics[room.roomId]) {
@@ -183,6 +198,9 @@ export class Lobby extends Scene {
         
         var i = 0;
         Object.values(this.data.values.takeoff_rooms_graphics).forEach(r => r.setPos(20,120, i++));
+
+        console.log(this.children);
+
     }
 
     /** join game and move to next screen ( instant ) */
