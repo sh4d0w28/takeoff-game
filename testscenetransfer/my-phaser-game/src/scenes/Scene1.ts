@@ -1,14 +1,14 @@
 import { Scene, Tweens } from 'phaser';
-import { containerOfGameObject } from '../Utils';
+import { containerOfGameObject } from '../Utils'
 
 export class Scene1 extends Scene
 {
-    private top:Phaser.GameObjects.Rectangle;
-    private left:Phaser.GameObjects.Rectangle;
-    private right: Phaser.GameObjects.Rectangle;
-    private topcontainer: Phaser.GameObjects.Container;
-    private leftcontainer: Phaser.GameObjects.Container;
-    private rightcontainer: Phaser.GameObjects.Container;
+    private topRectangle:Phaser.GameObjects.Rectangle;
+    private leftRectangle:Phaser.GameObjects.Rectangle;
+    private rightRectangle: Phaser.GameObjects.Rectangle;
+    private topContainer: Phaser.GameObjects.Container;
+    private leftContainer: Phaser.GameObjects.Container;
+    private rightContainer: Phaser.GameObjects.Container;
 
 
     constructor ()
@@ -18,15 +18,20 @@ export class Scene1 extends Scene
 
     create (data: any)
     {
-        this.top = this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0);
-        //
+        var self = this;
+        // add space to trigger change
+        this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).addListener('down', function() { self.moveFromScene1ToScene2(self); });
+
+        // top rectangle is always there
+        this.topRectangle = this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0);
+
         if(data.prepareFromScene2ToScene1) {
-            this.left = this.add.rectangle(20, 100, 760, 480, 0x111111, 0.9).setOrigin(0);
+            this.leftRectangle = this.add.rectangle(20, 100, 760, 480, 0x111111, 0.9).setOrigin(0);
         } else {
-            this.left = this.add.rectangle(20, 100, 512, 480, 0x111111, 0.9).setOrigin(0);    
+            this.leftRectangle = this.add.rectangle(20, 100, 512, 480, 0x111111, 0.9).setOrigin(0);    
         }
         
-        this.right = this.add.rectangle(552, 100, 228, 480, 0x111111, 0.9).setOrigin(0);
+        this.rightRectangle = this.add.rectangle(552, 100, 228, 480, 0x111111, 0.9).setOrigin(0);
 
         var titleText = this.add.text(20,20,"Main screen");
 
@@ -36,75 +41,84 @@ export class Scene1 extends Scene
         var highScoreTitleLine = this.add.text(20,20,"Score");
         var highScoreEntryLine = this.add.text(20,40,"Score1: 000");
 
-        this.topcontainer = containerOfGameObject(this, this.top, [titleText]);
-        this.leftcontainer = containerOfGameObject(this, this.left, [menuTextLine1, menuTextLine2]);
-        this.rightcontainer = containerOfGameObject(this, this.right, [highScoreTitleLine, highScoreEntryLine]);
+        this.topContainer = containerOfGameObject(this, this.topRectangle, [titleText]);
+        this.leftContainer = containerOfGameObject(this, this.leftRectangle, [menuTextLine1, menuTextLine2]);
+        this.rightContainer = containerOfGameObject(this, this.rightRectangle, [highScoreTitleLine, highScoreEntryLine]);
 
         if(data.prepareFromScene2ToScene1) {
-            this.moveFromScene2ToScene1();
-        } else {
-            this.moveFromScene1ToScene2();
+            this.completeMoveFromScene2ToScene1();
         }
     }
     
-    moveFromScene2ToScene1() {
+    /**
+     * Sequence:
+     * 1. Hide containers immediately ( alpha = 0 ), Hide right rectangle immediately (alpha = 0 )
+     * 2. Resize left rectangle ( 760 => to 512 ) 
+     * 3. Show right rectangle ( alpha 0 => 1 )
+     * 4. Show containers ( alpha 0 => 1 )
+     */
+    completeMoveFromScene2ToScene1() {
 
-        this.topcontainer.alpha = 0;
-        this.leftcontainer.alpha = 0;
-        this.rightcontainer.alpha = 0;
-        this.right.alpha = 0;
+        this.topContainer.alpha = 0;
+        this.leftContainer.alpha = 0;
+        this.rightContainer.alpha = 0;
+        this.rightRectangle.alpha = 0;
         
-        console.log('Scene1.moveFromScene2ToScene1');
+        console.log('Scene1.completeMoveFromScene2ToScene1');
 
         this.tweens.chain({
             tweens:[
                 {
-                    targets: this.left,
+                    targets: this.leftRectangle,
                     ease: 'Cubic',
                     width: 512,
-                    duration: 500,
+                    duration: 400,
                 },
                 {
-                    targets: this.right,
+                    targets: this.rightRectangle,
                     alpha:1,
                     ease: 'Cubic',
-                    duration: 500
+                    duration: 200
                 },
                 {
-                    targets: [this.topcontainer, this.leftcontainer, this.rightcontainer],
+                    targets: [this.topContainer, this.leftContainer, this.rightContainer],
                     alpha:1,
                     ease: 'Cubic',
-                    duration: 500,
+                    duration: 200,
                 }
             ]
         });
     }
 
-    moveFromScene1ToScene2() {
-        
+    /**
+     * Sequence: 
+     * 1. hide containers ( alpha 1 => 0 )
+     * 2. hide right rectangle ( alpha 1 => 0 )
+     * 3. resize left rectangle ( width 512 => 760 )
+     * 4. switch to scene 2
+     */
+    moveFromScene1ToScene2(self: Phaser.Scene) {
         console.log('Scene1.moveFromScene1ToScene2');
-
-        let self = this
         this.tweens.chain({
             tweens:[
                 {
-                    targets: [this.topcontainer, this.leftcontainer, this.rightcontainer],
+                    targets: [this.topContainer, this.leftContainer, this.rightContainer],
                     alpha:0,
                     ease: 'Cubic',
-                    duration: 500,
+                    duration: 200,
                 },
                 {
-                    targets: this.right,
+                    targets: this.rightRectangle,
                     alpha:0,
                     ease: 'Cubic',
-                    duration: 500
+                    duration: 200
                 },
                 {
-                    targets: this.left,
+                    targets: this.leftRectangle,
                     ease: 'Cubic',
                     width: 760,
                     duration: 500,
-                    onComplete: function() { self.scene.switch('Scene2', {}); }
+                    onComplete: function() { self.scene.switch('Scene2', {prepareFromScene1ToScene2:true}); }
                 }
             ]
         });
