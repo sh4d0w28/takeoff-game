@@ -1,6 +1,5 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { Map1 } from '../../../common/Maps';
 
 
@@ -109,26 +108,15 @@ export class Lobby extends Scene {
         this.add.rectangle(20, 120, 760, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
 
         // event processing
-        var client:Client = this.data.values.GlobalConfig.colyseus;
-
-        client.getAvailableRooms("takeoff_lobby").then((rooms:RoomAvailable[]) => {
-            var lobbyRoomId = rooms[0].roomId;
-            console.log('found lobby room!');
-            client.joinById(lobbyRoomId).then((lobby_room) => {
-        
-                this.data.values.GlobalConfig.room = lobby_room;
-    
-                lobby_room.onMessage("rooms", (rooms) => { this._rooms(rooms); } );
-                lobby_room.onMessage("+", ([roomId, room]) => { this.onAddRoom(roomId, room); });
-                lobby_room.onMessage("-", (roomId) => { this.onRemoveRoom(roomId); });
-                lobby_room.onLeave(() => { this._leave(); });  
-    
-                console.log("Joined lobby room!");
-            })
-            .catch((e) => {
-                console.error("Error", e);
-            });    
-        });
+        var config:GlobalConfig = this.data.values.GlobalConfig;
+        if(config.room ){
+            var lobby_room = config.room; 
+            console.log('roomfounnd');
+            lobby_room.onMessage("rooms", (rooms) => { this._rooms(rooms); } );
+            lobby_room.onMessage("+", ([roomId, room]) => { this.onAddRoom(roomId, room); });
+            lobby_room.onMessage("-", (roomId) => { this.onRemoveRoom(roomId); });
+            lobby_room.onLeave(() => { this._leave(); });
+        }
     }
 
     /** send message to server to make an empty room to join */

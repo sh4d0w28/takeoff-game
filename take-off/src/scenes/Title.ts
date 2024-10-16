@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import { Client, Room } from 'colyseus.js';
+import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { Map1 }  from '../../../common/Maps';
 import { containerOfGameObject } from '../Utils';
 
@@ -81,6 +81,24 @@ export class Title extends Scene {
         if(data.prepareFromScene2ToScene1) {
             this.moveFromLobbyToTitle();
         }
+
+
+
+        // event processing
+        var client:Client = this.data.values.GlobalConfig.colyseus;
+        client.getAvailableRooms("takeoff_lobby").then((rooms:RoomAvailable[]) => {
+            var lobbyRoomId = rooms[0].roomId;
+            console.log('found lobby room!');
+            client.joinById(lobbyRoomId).then((lobby_room) => {
+                this.data.values.GlobalConfig.room = lobby_room;    
+                lobby_room.onMessage("scores", (data) => { this.updateScore(data); });      
+                console.log("Joined lobby room!");
+            }).catch((e) => { console.error("Error", e); });    
+        });
+    }
+
+    updateScore(data: any) {
+        console.log(data);
     }
 
     moveFromLobbyToTitle() {
