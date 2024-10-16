@@ -58,6 +58,11 @@ export class Scene1 extends Scene
         if(data.prepareFromScene2ToScene1) {
             this.completeMoveFromScene2ToScene1();
         }
+
+        var ns = this.add.nineslice(200,200,'borderSpreadSheet',undefined,64,64,32,32,32,32).setDepth(19999);
+        ns.setSlices(90,90,32,32,32,32,true);
+
+        // this.add.sprite(0,0,this.spritesheet_id, 0).set
     }
     
     /**
