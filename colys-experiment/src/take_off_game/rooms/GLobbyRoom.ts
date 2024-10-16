@@ -17,7 +17,10 @@ export class GLobbyRoom extends LobbyRoom {
         });
 
         this.delayedInterval = this.clock.setInterval(() => {
-            this.broadcast('score', this.storage.listHighScores());
+            this.storage.listHighScores().then(data => {
+                this.broadcast('score', data);
+                                
+            });
         }, 1000);
     }
 }

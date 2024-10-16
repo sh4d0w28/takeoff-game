@@ -98,12 +98,16 @@ export class Lobby extends Scene {
             key: "bgImage",
             url: 'assets/images/bg.png'
         });
+        this.load.image({
+            key: "rctPanel",
+            url: "assets/images/panel_bg.png"
+        })
     }
 
     create() {
 
         /** draw basic figures */
-        //this.add.image(0,0, 'bgImage').setOrigin(0);
+        this.add.image(0,0, 'bgImage').setOrigin(0);
         this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(1);
         this.add.rectangle(20, 120, 760, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
 
