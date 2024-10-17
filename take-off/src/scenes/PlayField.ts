@@ -5,8 +5,16 @@ import PlaneDisplayUtil from '../components/PlaneDisplayUtil';
 import GroundDisplayUtil from '../components/GroundDisplayUtil';
 import BonusDisplayUtil from '../components/BonusDisplayUtil';
 import PlayerUiDisplayUtil from '../components/PlayerUiDisplayUtil';
+import { containerOfNineSlice } from '../Utils';
 
 export class PlayField extends Scene {   
+
+    private rectHeader:Phaser.GameObjects.NineSlice;
+    private rectGameField:Phaser.GameObjects.NineSlice;
+    private rectPlayers: Phaser.GameObjects.NineSlice;
+
+    private cntrHeader: Phaser.GameObjects.Container;
+    
 
     readonly tsize = 32
     readonly w = 800;
@@ -26,6 +34,10 @@ export class PlayField extends Scene {
             key: "bgImage",
             url: 'assets/images/bg.png'
         });
+        this.load.image({
+            key: "rctPanel",
+            url: "assets/images/panel_bg.png"
+        })
         
         this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
         this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h, 60, 160);
@@ -44,10 +56,14 @@ export class PlayField extends Scene {
 
     create() {
 
-        //this.add.image(0,0, 'bgImage').setOrigin(0);
-        this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(0);
-        this.add.rectangle(20, 120, 500, 450, 0x111111, 0.9).setOrigin(0).setDepth(0);
-        this.add.rectangle(550, 120, 800 - 20 - 550, 450, 0x111111, 0.9).setOrigin(0).setDepth(0);
+        var cfg:GlobalConfig = this.data.get(GlobalConfig.KEY);
+
+        this.add.image(0,0, 'bgImage').setOrigin(0);
+        
+        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
+        var titleText = this.add.text(20,15,"=============== " + cfg.room?.id + " ===============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
+        this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
+
 
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();
@@ -95,6 +111,6 @@ export class PlayField extends Scene {
         this.planeDisplayUtil.drawPlanes(state);
         this.groundDisplayUtil.drawGroundTiles(state);
         this.bonusDisplayUtil.drawBonuses(state);
-        this.playerUiDisplayUtil.drawGUI(state);
+        //this.playerUiDisplayUtil.drawGUI(state);
     }
 }

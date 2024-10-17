@@ -12,22 +12,15 @@ export class GLobbyRoom extends LobbyRoom {
         this.storage = new PersistentStorage();
         this.clock.start();
 
-        this.onMessage("scores", (client, message) => {    
+        this.onMessage("new", (client, message) => {    
+            console.log('need create takeoff_room')
             matchMaker.createRoom("takeoff_room", message);
         });
-
+        
         this.delayedInterval = this.clock.setInterval(() => {
             this.storage.listHighScores().then(data => {
-                this.broadcast('score', data);
-                                
+                this.broadcast('score', data);                 
             });
         }, 1000);
     }
 }
-
-
-
-
-
-
-
