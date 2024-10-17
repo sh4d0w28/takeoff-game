@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Map1 } from '../../../common/Maps';
 import { containerOfNineSlice } from '../Utils';
+import { Client, RoomAvailable } from 'colyseus.js';
 
 
 class RoomRect {
@@ -112,10 +113,10 @@ export class Lobby extends Scene {
         })
     }
 
-    create(data: any) {
+    create(data: GlobalConfig) {
 
         /** draw basic figures */
-        //this.add.image(0,0, 'bgImage').setOrigin(0);
+        this.add.image(0,0, 'bgImage').setOrigin(0);
         
         this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
         this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
@@ -124,16 +125,19 @@ export class Lobby extends Scene {
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
 
         // event processing
-        var config:GlobalConfig = this.data.values.GlobalConfig;
-        if(config.room ){
-            config.colyseus.reconnect(config.room.reconnectionToken);
-            var lobby_room = config.room;
-            console.log(lobby_room);
-            lobby_room.onMessage("rooms", (rooms) => { console.log('on rooms'); this._rooms(rooms); } );
-            lobby_room.onMessage("+", ([roomId, room]) => {console.log('on +'); this.onAddRoom(roomId, room); });
-            lobby_room.onMessage("-", (roomId) => { console.log('on -'); this.onRemoveRoom(roomId); });
-            lobby_room.onLeave(() => { console.log('on leave'); this._leave(); });
-        }
+        var client:Client = this.data.values.GlobalConfig.colyseus;
+        client.getAvailableRooms("takeoff_lobby").then((rooms:RoomAvailable[]) => {
+            var lobbyRoomId = rooms[0].roomId;
+            console.log('found lobby room!');
+            client.joinById(lobbyRoomId).then((lobby_room) => {
+                this.data.values.room = lobby_room;
+                console.log(lobby_room);
+                lobby_room.onMessage("rooms", (rooms) => { console.log('on rooms'); this._rooms(rooms); } );
+                lobby_room.onMessage("+", ([roomId, room]) => {console.log('on +'); this.onAddRoom(roomId, room); });
+                lobby_room.onMessage("-", (roomId) => { console.log('on -'); this.onRemoveRoom(roomId); });
+                lobby_room.onLeave(() => { console.log('on leave'); this._leave(); });
+            });
+        });
         
         if(data.prepareFromScene1ToScene2) {
             this.completeMoveFromScene1ToScene2();

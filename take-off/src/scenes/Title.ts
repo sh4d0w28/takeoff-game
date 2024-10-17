@@ -40,7 +40,7 @@ export class Title extends Scene {
     create (data: any)
     {
         // bg image
-        //this.add.image(0,0, 'bgImage').setOrigin(0);
+        this.add.image(0,0, 'bgImage').setOrigin(0);
         
         // rectangles
         this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
@@ -223,9 +223,9 @@ export class Title extends Scene {
         });
     }
     _goToLobby() {
-        
-        var cfg = this.data.get(GlobalConfig.KEY);
-        cfg['prepareFromScene1ToScene2'] = true;
+        var cfg: GlobalConfig = this.data.get(GlobalConfig.KEY);
+        cfg.room?.leave
+        cfg.prepareFromScene1ToScene2 = true;
         this.moveFromTitleToLobby(cfg);
     }
  
