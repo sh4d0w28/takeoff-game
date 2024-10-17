@@ -2,27 +2,31 @@ import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { Map1 }  from '../../../common/Maps';
-import { containerOfGameObject, containerOfNineSlice } from '../Utils';
+import { containerOfNineSlice } from '../Utils';
 
 export class Title extends Scene {
 
     private rectHeader:Phaser.GameObjects.NineSlice;
     private rectMain:Phaser.GameObjects.NineSlice;
     private rectRight: Phaser.GameObjects.NineSlice;
+    
     private cntrHeader: Phaser.GameObjects.Container;
     private cntrMain: Phaser.GameObjects.Container;
     private cntrRight: Phaser.GameObjects.Container;
+
 
     private highScores: Phaser.GameObjects.Text;
 
     constructor() {
         super("Title");
     }
+    
     init(data: GlobalConfig) {
         this.data.set(GlobalConfig.KEY, data);
         this.data.values.menulist = [];
         this.data.values.menuselected = 0;
     }
+    
     preload() {
         this.load.image({
             key: "bgImage",
@@ -36,35 +40,37 @@ export class Title extends Scene {
     create (data: any)
     {
         // bg image
-        this.add.image(0,0, 'bgImage').setOrigin(0);
+        //this.add.image(0,0, 'bgImage').setOrigin(0);
         
         // rectangles
-        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setAlpha(0.9).setOrigin(0).setDepth(1);
+        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
+        
         if(data.prepareFromScene2ToScene1) {
-            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setAlpha(0.9).setOrigin(0).setDepth(1);
+            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
         } else {
-            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 512, 480, 20, 20,20,20).setAlpha(0.9).setOrigin(0).setDepth(1);    
+            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 512, 480, 20, 20,20,20).setOrigin(0).setDepth(1);    
         }
-        this.rectRight = this.add.nineslice(552, 100, 'rctPanel', undefined, 228, 480, 20, 20,20,20).setAlpha(0.9).setOrigin(0).setDepth(1);
+        
+        this.rectRight = this.add.nineslice(552, 100, 'rctPanel', undefined, 228, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
 
         var titleText = this.add.text(20,15,"============= MAIN MENU =============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
 
         /** draw menu ( single player / multiplayer ) */
-        let singlePlayerText = this.add.text(256, 380, 'Start SinglePlayer', { fontFamily:"arcadepi", fontSize:30, color: '#f90000' }).setOrigin(0.5).setDepth(2).setInteractive().on('pointerdown', () => this._startSinglePlayer() );
-        let multiPlayerText =  this.add.text(256, 430, 'Go To Lobby', { fontFamily:"arcadepi", fontSize:30, color: '#f90000' }).setOrigin(0.5).setDepth(2).setInteractive().on('pointerdown', () => this._goToLobby() );        
-        
+        let singlePlayerText = this.add.text(0, 0, 'Start SinglePlayer', { fontFamily:"arcadepi", fontSize:30, color: '#f90000' }).setOrigin(0.5).setDepth(2).setInteractive().on('pointerdown', () => this._startSinglePlayer() );
+        let multiPlayerText =  this.add.text(0, 40, 'Go To Lobby', { fontFamily:"arcadepi", fontSize:30, color: '#f90000' }).setOrigin(0.5).setDepth(2).setInteractive().on('pointerdown', () => this._goToLobby() );        
         this.setTween(singlePlayerText).play();
         this.setTween(multiPlayerText).pause();
         this.data.values.menulist.push(singlePlayerText);
         this.data.values.menulist.push(multiPlayerText);
 
+        var menuContainer = this.add.container(256,380, [singlePlayerText, multiPlayerText]);
 
         var scorepoints = this.add.text(20,20, "High Scores",{ fontFamily:"arcadepi", fontSize:20, color: '#0f0' }).setDepth(2);
         this.highScores = this.add.text(20,50, "",{ fontFamily:"arcadepi", fontSize:15, color: '#0f0' }).setDepth(2)
 
         // containers
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
-        this.cntrMain = containerOfNineSlice(this, this.rectMain, [singlePlayerText, multiPlayerText]);
+        this.cntrMain = containerOfNineSlice(this, this.rectMain, [menuContainer]);
         this.cntrRight = containerOfNineSlice(this, this.rectRight, [scorepoints, this.highScores]);
 
         /** controls processing ( WSAD+SPACE ) */
@@ -88,8 +94,6 @@ export class Title extends Scene {
         if(data.prepareFromScene2ToScene1) {
             this.moveFromLobbyToTitle();
         }
-
-
 
         // event processing
         var client:Client = this.data.values.GlobalConfig.colyseus;
@@ -220,7 +224,9 @@ export class Title extends Scene {
     }
     _goToLobby() {
         
-        this.moveFromTitleToLobby(this.data.get(GlobalConfig.KEY));
+        var cfg = this.data.get(GlobalConfig.KEY);
+        cfg['prepareFromScene1ToScene2'] = true;
+        this.moveFromTitleToLobby(cfg);
     }
  
     setTween(el: Phaser.GameObjects.Text) {

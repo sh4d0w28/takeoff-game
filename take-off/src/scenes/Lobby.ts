@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Map1 } from '../../../common/Maps';
+import { containerOfNineSlice } from '../Utils';
 
 
 class RoomRect {
@@ -83,11 +84,18 @@ class RoomRect {
 }
 export class Lobby extends Scene {   
 
+    private rectHeader:Phaser.GameObjects.NineSlice;
+    private rectMain: Phaser.GameObjects.NineSlice;
+    
+    private cntrHeader: Phaser.GameObjects.Container;
+    private cntrMain: Phaser.GameObjects.Container;
+
     constructor() {
         super("Lobby");
     }
 
     init(data: GlobalConfig) {
+        console.log('init', data);
         this.data.values.GlobalConfig = data;
         this.data.values.takeoff_rooms_graphics = {}
         this.data.values.takeoff_rooms = {};
@@ -104,23 +112,52 @@ export class Lobby extends Scene {
         })
     }
 
-    create() {
+    create(data: any) {
 
         /** draw basic figures */
-        this.add.image(0,0, 'bgImage').setOrigin(0);
-        this.add.rectangle(20, 20, 760, 60, 0x111111, 0.9).setOrigin(0).setDepth(1);
-        this.add.rectangle(20, 120, 760, 450, 0x111111, 0.9).setOrigin(0).setDepth(1);
+        //this.add.image(0,0, 'bgImage').setOrigin(0);
+        
+        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
+        this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+        
+        var titleText = this.add.text(20,15,"=============== LOBBY ===============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
+        this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
 
         // event processing
         var config:GlobalConfig = this.data.values.GlobalConfig;
         if(config.room ){
-            var lobby_room = config.room; 
-            console.log('roomfounnd');
-            lobby_room.onMessage("rooms", (rooms) => { this._rooms(rooms); } );
-            lobby_room.onMessage("+", ([roomId, room]) => { this.onAddRoom(roomId, room); });
-            lobby_room.onMessage("-", (roomId) => { this.onRemoveRoom(roomId); });
-            lobby_room.onLeave(() => { this._leave(); });
+            config.colyseus.reconnect(config.room.reconnectionToken);
+            var lobby_room = config.room;
+            console.log(lobby_room);
+            lobby_room.onMessage("rooms", (rooms) => { console.log('on rooms'); this._rooms(rooms); } );
+            lobby_room.onMessage("+", ([roomId, room]) => {console.log('on +'); this.onAddRoom(roomId, room); });
+            lobby_room.onMessage("-", (roomId) => { console.log('on -'); this.onRemoveRoom(roomId); });
+            lobby_room.onLeave(() => { console.log('on leave'); this._leave(); });
         }
+        
+        if(data.prepareFromScene1ToScene2) {
+            this.completeMoveFromScene1ToScene2();
+        }
+    }
+
+    /**
+     * Sequence:
+     * 1. Hide containers immediately ( aplha = 0 )
+     * 2. Show containers ( alpha 0 => 1 )
+     */
+    completeMoveFromScene1ToScene2() {
+        this.cntrHeader.setAlpha(0);
+    
+        this.tweens.chain({
+            tweens:[
+                {
+                    targets: [this.cntrHeader],
+                    alpha:1,
+                    ease: 'Cubic',
+                    duration: 1000
+                }
+            ]
+        });
     }
 
     /** send message to server to make an empty room to join */
