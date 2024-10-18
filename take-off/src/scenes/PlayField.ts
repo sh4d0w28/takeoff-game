@@ -43,12 +43,12 @@ export class PlayField extends Scene {
         
         this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
         this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h, 60, 160);
-        // this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
+        this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
         // this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
 
         this.groundDisplayUtil.registerSpriteSheet();
         this.planeDisplayUtil.registerSpriteSheet();
-        // this.bonusDisplayUtil.registerSpriteSheet();
+        this.bonusDisplayUtil.registerSpriteSheet();
         // this.playerUiDisplayUtil.registerSpriteSheet();
     }
 
@@ -56,6 +56,8 @@ export class PlayField extends Scene {
         this.data.set('GlobalConfig', data);
     }
 
+    // 760 columns  
+    // 480 rows 
     create() {
 
         var self = this;
@@ -66,13 +68,14 @@ export class PlayField extends Scene {
         
         this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
         var titleText = this.add.text(20,15,"=============== " + cfg.room?.id + " ===============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
-        this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
 
         this.rectGameField = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+
+        this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
         this.cntrGameField = containerOfNineSlice(this, this.rectGameField, []);
 
-        // this.planeDisplayUtil.registerAnimation();
-        // this.bonusDisplayUtil.registerAnimation();
+        this.planeDisplayUtil.registerAnimation();
+        this.bonusDisplayUtil.registerAnimation();
 
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
@@ -116,7 +119,7 @@ export class PlayField extends Scene {
 
         this.planeDisplayUtil.drawPlanes(state);
         this.groundDisplayUtil.drawGroundTiles(state);
-        // this.bonusDisplayUtil.drawBonuses(state);
+        this.bonusDisplayUtil.drawBonuses(state);
         //this.playerUiDisplayUtil.drawGUI(state);
     }
 }

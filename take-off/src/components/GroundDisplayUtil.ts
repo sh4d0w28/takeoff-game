@@ -12,6 +12,8 @@ export default class GroundDisplayUtil {
     private static readonly GROUND_TILE_SPRITESHEET = 'roadSpriteSheet';
     public static readonly GROUND_TILE_SPRITEFILE = 'assets/roadsprite.bmp';
 
+    readonly sprites:Map<String,Phaser.GameObjects.Image> = new Map();
+
     public constructor(s: Phaser.Scene, tsize: number, w:number, h:number, left:number, top:number){
         this.scene = s;
         this.tSize = tsize;
@@ -53,8 +55,22 @@ export default class GroundDisplayUtil {
         
         state.mapSpecification.forEach((tile:string ,coord:string)=>{
             const [x,y] = coord.split('.').map(v => parseInt(v));
-            this.drawMapChar(fieldLeftX + x * this.tSize, fieldTopY + y * this.tSize, tile, this.scene);
+            if(this.sprites.has(coord)) {
+                this.updateMapChar(this.sprites.get(coord)!, tile);               
+            } else {
+                this.sprites.set(coord, this.drawMapChar(fieldLeftX + x * this.tSize, fieldTopY + y * this.tSize, tile, this.scene)!);
+            }
         });
+    }
+
+    private updateMapChar(image: Phaser.GameObjects.Image, c:string) {
+        switch(c) {
+            case '╔': case '┌': case '╗': case '┐': case '╝': case '┘': case '╚': case '└': image.setFrame(2); break;
+            case '║': case '│': case '═': case '─': image.setFrame(1); break;
+            case '┤': case '┴': case '├': case '┬': image.setFrame(0); break;
+            case '┼': image.setFrame(3); break;
+            case '*': image.setFrame(4); break;
+        }
     }
 
     /**
@@ -66,18 +82,19 @@ export default class GroundDisplayUtil {
      */
     private drawMapChar(x:integer,y:integer, c: string, scene: Scene) {
         switch(c) {
-            case '╔': case '┌': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2);                          break;
-            case '╗': case '┐': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI/2 ); break;
-            case '╝': case '┘': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI   ); break;
-            case '╚': case '└': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation(-Math.PI/2 ); break;
-            case '║': case '│': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 1);                          break;
-            case '═': case '─': scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 1).setRotation( Math.PI/2 ); break;
-            case '┤':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI   ); break; 
-            case '┴':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation(-Math.PI/2 ); break;
-            case '├':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0);                          break;
-            case '┬':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI/2 ); break;
-            case '┼':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 3);                          break;
-            case '*':           scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4);                          break;
+            case '╔': case '┌': return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2);                          break;
+            case '╗': case '┐': return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI/2 ); break;
+            case '╝': case '┘': return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation( Math.PI   ); break;
+            case '╚': case '└': return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 2).setRotation(-Math.PI/2 ); break;
+            case '║': case '│': return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 1);                          break;
+            case '═': case '─': return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 1).setRotation( Math.PI/2 ); break;
+            case '┤':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI   ); break; 
+            case '┴':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation(-Math.PI/2 ); break;
+            case '├':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0);                          break;
+            case '┬':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI/2 ); break;
+            case '┼':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 3);                          break;
+            case '*':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4);                          break;
+            default: return undefined
         }
     }
 }
