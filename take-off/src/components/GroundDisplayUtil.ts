@@ -21,8 +21,6 @@ export default class GroundDisplayUtil {
         this.h = h;
         this.top = top;
         this.left = left;
-
-        // no saving required
     }
 
     public registerSpriteSheet() {
@@ -63,6 +61,11 @@ export default class GroundDisplayUtil {
         });
     }
 
+    /**
+     * update frame ( if map will be changed for any reason )
+     * @param image - original image from list
+     * @param c - new tile ( or old )
+     */
     private updateMapChar(image: Phaser.GameObjects.Image, c:string) {
         switch(c) {
             case '╔': case '┌': case '╗': case '┐': case '╝': case '┘': case '╚': case '└': image.setFrame(2); break;
@@ -74,7 +77,7 @@ export default class GroundDisplayUtil {
     }
 
     /**
-     * Draw a tile based on its position
+     * Draw a tile based on its position and return it.
      * @param x     - tile coord
      * @param y     - tile coord
      * @param c     - tile spec
