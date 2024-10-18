@@ -1,8 +1,9 @@
-import { Scene } from 'phaser';
+import { Scene, Tweens } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { Map1 }  from '../../../common/Maps';
 import { containerOfNineSlice } from '../Utils';
+import { Lobby } from './Lobby';
 
 class Menu {
     private s: Scene;
@@ -179,7 +180,7 @@ export class Title extends Scene {
                     targets: this.rectMain,
                     ease: 'Cubic',
                     width: 512,
-                    duration: 500,
+                    duration: 500
                 },
                 {
                     targets: this.rectRight,
@@ -221,13 +222,13 @@ export class Title extends Scene {
                     targets: this.rectRight,
                     alpha:0,
                     ease: 'Cubic',
-                    duration: 500
+                    duration: 300
                 },
                 {
                     targets: this.rectMain,
                     ease: 'Cubic',
                     width: 760,
-                    duration: 500,
+                    duration: 300,
                     onComplete: function() { self.scene.switch('Lobby', config); }
                 }
             ]
@@ -236,7 +237,6 @@ export class Title extends Scene {
 
     /** create new default room  */
     _startSinglePlayer() {
-        debugger;
         var client:Client = this.data.get(GlobalConfig.KEY).colyseus;
         client.joinOrCreate("takeoff_room", { 
             width: Map1.width
@@ -253,7 +253,8 @@ export class Title extends Scene {
     }
     _goToLobby() {
         var cfg: GlobalConfig = this.data.get(GlobalConfig.KEY);
-        // cfg.room?.leave(true);
+        cfg.room?.leave(true);
+        cfg.room = undefined;
         cfg.prepareFromScene1ToScene2 = true;
         this.moveFromTitleToLobby(cfg);
     }

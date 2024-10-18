@@ -11,9 +11,9 @@ export class PlayField extends Scene {
 
     private rectHeader:Phaser.GameObjects.NineSlice;
     private rectGameField:Phaser.GameObjects.NineSlice;
-    private rectPlayers: Phaser.GameObjects.NineSlice;
 
     private cntrHeader: Phaser.GameObjects.Container;
+    private cntrGameField: Phaser.GameObjects.Container;
     
 
     readonly tsize = 32
@@ -24,6 +24,8 @@ export class PlayField extends Scene {
     private groundDisplayUtil: GroundDisplayUtil;
     private bonusDisplayUtil: BonusDisplayUtil;
     private playerUiDisplayUtil: PlayerUiDisplayUtil;
+
+    private keyState: boolean[] = [false, false, false, false];
 
     constructor() {
         super("Game");
@@ -41,13 +43,13 @@ export class PlayField extends Scene {
         
         this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
         this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h, 60, 160);
-        this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
-        this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
+        // this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
+        // this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
 
         this.groundDisplayUtil.registerSpriteSheet();
         this.planeDisplayUtil.registerSpriteSheet();
-        this.bonusDisplayUtil.registerSpriteSheet();
-        this.playerUiDisplayUtil.registerSpriteSheet();
+        // this.bonusDisplayUtil.registerSpriteSheet();
+        // this.playerUiDisplayUtil.registerSpriteSheet();
     }
 
     init(data: GlobalConfig) {
@@ -55,6 +57,8 @@ export class PlayField extends Scene {
     }
 
     create() {
+
+        var self = this;
 
         var cfg:GlobalConfig = this.data.get(GlobalConfig.KEY);
 
@@ -64,9 +68,11 @@ export class PlayField extends Scene {
         var titleText = this.add.text(20,15,"=============== " + cfg.room?.id + " ===============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
 
+        this.rectGameField = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+        this.cntrGameField = containerOfNineSlice(this, this.rectGameField, []);
 
-        this.planeDisplayUtil.registerAnimation();
-        this.bonusDisplayUtil.registerAnimation();
+        // this.planeDisplayUtil.registerAnimation();
+        // this.bonusDisplayUtil.registerAnimation();
 
         // event processing
         var room: Room = this.data.get("GlobalConfig").room; 
@@ -76,12 +82,12 @@ export class PlayField extends Scene {
         var sendInterval = 1000;
 
         // register key events 
-        var controlBtns = this.input.keyboard?.addKeys('W,S,A,D');
+        var controlBtns = this.input.keyboard?.addKeys('W,S,A,D', true, false);
         if(controlBtns) {
-            controlBtns.W.addListener('up',    function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'w'); } });
-            controlBtns.A.addListener('left',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'a'); } });
-            controlBtns.S.addListener('down',  function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 's'); } });
-            controlBtns.D.addListener('right', function() {if(Date.now() - lastSent > sendInterval) {lastSent = Date.now(); room.send('wasd', 'd'); } });
+            controlBtns.W.addListener('down', () => {room.send('wasd', 'w');});
+            controlBtns.A.addListener('down', () => {room.send('wasd', 'a');});
+            controlBtns.S.addListener('down', () => {room.send('wasd', 's');});
+            controlBtns.D.addListener('down', () => {room.send('wasd', 'd');});
         }
         // receive message if LOST / WIN
         room.onMessage("state", (message) => {
@@ -110,7 +116,7 @@ export class PlayField extends Scene {
 
         this.planeDisplayUtil.drawPlanes(state);
         this.groundDisplayUtil.drawGroundTiles(state);
-        this.bonusDisplayUtil.drawBonuses(state);
+        // this.bonusDisplayUtil.drawBonuses(state);
         //this.playerUiDisplayUtil.drawGUI(state);
     }
 }

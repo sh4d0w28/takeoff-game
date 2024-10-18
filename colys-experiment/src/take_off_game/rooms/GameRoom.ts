@@ -16,6 +16,7 @@ export class GameRoom extends Room<AirFieldState> {
       this.clock.start();
       
       this.onMessage("wasd", (client, message:string) => {
+        console.log("wasd received: " + message);
         switch(message.toLowerCase()) {
           case 'w':
             this.state.planes.get(client.sessionId).askToTurn(DirectionEnum.UP);
@@ -34,7 +35,7 @@ export class GameRoom extends Room<AirFieldState> {
   
       this.delayedInterval = this.clock.setInterval(() => {
         this.state.advance(this);
-      }, 100);
+      }, 200);
     }
   
     onJoin (client: Client, options: PlayerJoinOption) {

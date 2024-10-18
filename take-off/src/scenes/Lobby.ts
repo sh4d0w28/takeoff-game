@@ -124,14 +124,17 @@ export class Lobby extends Scene {
         var titleText = this.add.text(20,15,"=============== LOBBY ===============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
 
+        this.cntrMain = containerOfNineSlice(this, this.rectMain, []);
+
         // event processing
         var client:Client = this.data.values.GlobalConfig.colyseus;
         client.getAvailableRooms("takeoff_lobby").then((rooms:RoomAvailable[]) => {
             var lobbyRoomId = rooms[0].roomId;
             console.log('found lobby room!');
             client.joinById(lobbyRoomId).then((lobby_room) => {
-                this.data.values.room = lobby_room;
+                this.data.values.GlobalConfig.room = lobby_room;
                 console.log(lobby_room);
+                lobby_room.onMessage("score", () => {});
                 lobby_room.onMessage("rooms", (rooms) => { console.log('on rooms'); this._rooms(rooms); } );
                 lobby_room.onMessage("+", ([roomId, room]) => {console.log('on +'); this.onAddRoom(roomId, room); });
                 lobby_room.onMessage("-", (roomId) => { console.log('on -'); this.onRemoveRoom(roomId); });
