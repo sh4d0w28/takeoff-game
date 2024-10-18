@@ -38,6 +38,10 @@ export default abstract class FieldMapUtil {
       return "═║╔╗╚╝".includes(c);       
     }
 
+    public static isADeadEndZone(c: string) { 
+      return "╴╵╶╷".includes(c);
+    }
+
     public static isAScorePoint(c: string) {
       return "*" == c;       
     }

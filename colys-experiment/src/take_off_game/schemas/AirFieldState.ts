@@ -10,6 +10,7 @@ import { PlaneStateEnum } from "../../../../common/Enums";
 import RandomUtil from "../utils/RandomUtil";
 import { BonusState } from "./BonusState";
 import { v4 as uuidv4 } from 'uuid';
+import PersistentStorage from "../../PersistentStorage";
 
 export class AirFieldState extends Schema {
 
@@ -22,6 +23,7 @@ export class AirFieldState extends Schema {
     @type({ map: BonusState }) bonuses = new MapSchema<BonusState>();
 
     startPoints: PlayerStartPointOption[]
+    persistentStorage: PersistentStorage;
 
     constructor(options: AirFieldStateOption) {
         super();
@@ -30,6 +32,7 @@ export class AirFieldState extends Schema {
         this.mapSpecification = FieldMapUtil.stringFieldSpecToMap(options.map, options.width);
 
         this.startPoints = options.startPoints;
+        this.persistentStorage = new PersistentStorage()
     }
 
     // advance state ( move planes, pickup bonuses, increase scores, takingoff )
@@ -153,6 +156,14 @@ export class AirFieldState extends Schema {
         }
     }
 
+    private loseGame(sessionId:string, plane: PlaneState, room: Room) {
+        plane.currentSpeed = 0;
+        plane.state = PlaneStateEnum.DEAD;
+        room.clients.getById(sessionId).send('state', 'LOST');
+        this.persistentStorage.updateScore(sessionId, this.players.get(sessionId).score);
+        return;
+    }
+
     private _advancePlanes(room?: Room) {
         this.planes.forEach((plane, sessionId) => {
 
@@ -171,10 +182,16 @@ export class AirFieldState extends Schema {
                 plane.state = PlaneStateEnum.TAKEOFF;
             }
 
+            if (FieldMapUtil.isADeadEndZone(currentFieldContent)) {
+                this.loseGame(sessionId, plane, room);
+                return;
+            }
+
             // check if we try to score a point
             if (FieldMapUtil.isAScorePoint(currentFieldContent)) {
                 if (plane.currentSpeed >= plane.takeOffSpeed) {
                     this.players.get(sessionId).score++;
+                    this.persistentStorage.updateScore(sessionId, this.players.get(sessionId).score);
                     // reset speeds 
                     plane.currentSpeed = 0;
                     plane.takeOffSpeed = RandomUtil.getRandomInt(8, 10);
@@ -187,10 +204,7 @@ export class AirFieldState extends Schema {
                     plane.desiredDirection = sp.direction;
                     return;
                 } else {
-                    plane.currentSpeed = 0;
-                    plane.state = PlaneStateEnum.DEAD;
-                    room.clients.getById(sessionId).send('state', 'LOST');
-                    return;
+                    this.loseGame(sessionId, plane, room);
                 }
             }
 
