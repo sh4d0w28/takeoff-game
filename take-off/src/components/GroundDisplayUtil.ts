@@ -97,6 +97,12 @@ export default class GroundDisplayUtil {
             case '┬':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 0).setRotation( Math.PI/2 ); break;
             case '┼':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 3);                          break;
             case '*':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4);                          break;
+            
+            // TODO : MAKE SPRITES!!!!!!!!!!
+            case '╴':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4); break; 
+            case '╵':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4); break;
+            case '╶':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4); break;
+            case '╷':           return scene.add.image(x,y, GroundDisplayUtil.GROUND_TILE_SPRITESHEET, 4); break;
             default: return undefined
         }
     }
