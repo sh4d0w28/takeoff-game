@@ -35,7 +35,7 @@ export class GameRoom extends Room<AirFieldState> {
   
       this.delayedInterval = this.clock.setInterval(() => {
         this.state.advance(this);
-      }, 200);
+      }, 100);
     }
   
     onJoin (client: Client, options: PlayerJoinOption) {
