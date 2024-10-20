@@ -1,7 +1,7 @@
 import { Scene, Tweens } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { Client, Room, RoomAvailable } from 'colyseus.js';
-import { Map1 }  from '../../../common/Maps';
+import { Map1, Map2 }  from '../../../common/Maps';
 import { containerOfNineSlice } from '../Utils';
 import { Lobby } from './Lobby';
 
@@ -239,10 +239,10 @@ export class Title extends Scene {
     _startSinglePlayer() {
         var client:Client = this.data.get(GlobalConfig.KEY).colyseus;
         client.joinOrCreate("takeoff_room", { 
-            width: Map1.width
-          , height: Map1.height
-          , map: Map1.map.join("")
-          , startPoints: Map1.startPoints
+            width: Map2.width
+          , height: Map2.height
+          , map: Map2.map.join("")
+          , startPoints: Map2.startPoints
           //, externalId: ""
           //, displayName: ""
         }).then((room: Room) => {

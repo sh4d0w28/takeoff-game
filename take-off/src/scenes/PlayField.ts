@@ -39,7 +39,12 @@ export class PlayField extends Scene {
         this.load.image({
             key: "rctPanel",
             url: "assets/images/panel_bg.png"
-        })
+        });
+        this.load.image({
+            key: "fieldBg",
+            url: 'assets/field_bg.png'
+        });
+        
         
         this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
         this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h, 60, 160);
@@ -72,7 +77,11 @@ export class PlayField extends Scene {
         this.rectGameField = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
 
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
-        this.cntrGameField = containerOfNineSlice(this, this.rectGameField, []);
+
+        var playfield_bg = this.add.image(0,0,'fieldBg').setOrigin(0);
+        this.cntrGameField = this.add.container(this.rectGameField.x, this.rectGameField.y, playfield_bg);
+
+//        this.cntrGameField = containerOfNineSlice(this, this.rectGameField, []);
 
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();

@@ -33,3 +33,18 @@ export const Map1:FieldMapSet = {
         {x:0,y:0,direction: 'RIGHT' }
     ],
 }
+
+export const Map2:FieldMapSet = {
+    width: 4,
+    height: 7, 
+    map: ["╔╗╝╚"
+        , "┌┐┘└"
+        , "║═│─"
+        , "┤┴├┬"
+        , "┼  *"
+        , "╴╵╶╷"
+        , "╸╹╺╻"],
+    startPoints:[
+        {x:0,y:0,direction: 'RIGHT' }
+    ],
+}
