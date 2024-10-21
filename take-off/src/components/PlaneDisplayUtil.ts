@@ -54,7 +54,7 @@ export default class PlaneDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
     */
-    public drawPlanes(state: any) 
+    public drawPlanes(container: Phaser.GameObjects.Container, state: any) 
     {
         // center point based 
         var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
@@ -73,8 +73,9 @@ export default class PlaneDisplayUtil {
             var planeSprite: Phaser.GameObjects.Sprite;
 
             if (!planes[sessionId]) {
-                planeSprite = this.scene.add.sprite(0,0,PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color).setDepth(2);
+                planeSprite = this.scene.add.sprite(0,0,PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color);
                 planes[sessionId] = planeSprite;
+                container.add(planeSprite);
             } else {
                 planeSprite = planes[sessionId];
             }

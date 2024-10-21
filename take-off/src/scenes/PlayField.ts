@@ -14,7 +14,6 @@ export class PlayField extends Scene {
 
     private cntrHeader: Phaser.GameObjects.Container;
     private cntrGameField: Phaser.GameObjects.Container;
-    
 
     readonly tsize = 32
     readonly w = 800;
@@ -24,8 +23,6 @@ export class PlayField extends Scene {
     private groundDisplayUtil: GroundDisplayUtil;
     private bonusDisplayUtil: BonusDisplayUtil;
     private playerUiDisplayUtil: PlayerUiDisplayUtil;
-
-    private keyState: boolean[] = [false, false, false, false];
 
     constructor() {
         super("Game");
@@ -45,10 +42,10 @@ export class PlayField extends Scene {
             url: 'assets/field_bg.png'
         });
         
-        
-        this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, this.w, this.h);
-        this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, this.w, this.h, 60, 160);
-        this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, this.w, this.h);
+         
+        this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, 760, 480);
+        this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, 760, 480);
+        this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, 760, 480);
         // this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
 
         this.groundDisplayUtil.registerSpriteSheet();
@@ -81,17 +78,11 @@ export class PlayField extends Scene {
         var playfield_bg = this.add.image(0,0,'fieldBg').setOrigin(0);
         this.cntrGameField = this.add.container(this.rectGameField.x, this.rectGameField.y, playfield_bg);
 
-//        this.cntrGameField = containerOfNineSlice(this, this.rectGameField, []);
-
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();
 
         // event processing
-        var room: Room = this.data.get("GlobalConfig").room; 
-        
-        var lastSent = Date.now();
-
-        var sendInterval = 1000;
+        var room: Room = this.data.get("GlobalConfig").room;
 
         // register key events 
         var controlBtns = this.input.keyboard?.addKeys('W,S,A,D', true, false);
@@ -125,10 +116,9 @@ export class PlayField extends Scene {
             return;
         }
         var state = this.data.get("state");
-
-        this.planeDisplayUtil.drawPlanes(state);
-        this.groundDisplayUtil.drawGroundTiles(state);
-        this.bonusDisplayUtil.drawBonuses(state);
+        this.groundDisplayUtil.drawGroundTiles(this.cntrGameField, state);
+        this.bonusDisplayUtil.drawBonuses(this.cntrGameField, state);
+        this.planeDisplayUtil.drawPlanes(this.cntrGameField, state);
         //this.playerUiDisplayUtil.drawGUI(state);
     }
 }

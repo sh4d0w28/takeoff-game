@@ -6,21 +6,17 @@ export default class GroundDisplayUtil {
     readonly scene: Phaser.Scene;
     readonly w:number;
     readonly h:number;
-    readonly top:number;
-    readonly left:number;
 
     private static readonly GROUND_TILE_SPRITESHEET = 'roadSpriteSheet';
     public static readonly GROUND_TILE_SPRITEFILE = 'assets/roadnoise.png';
 
     readonly sprites:Map<String,Phaser.GameObjects.Image> = new Map();
 
-    public constructor(s: Phaser.Scene, tsize: number, w:number, h:number, left:number, top:number){
+    public constructor(s: Phaser.Scene, tsize: number, w:number, h:number){
         this.scene = s;
         this.tSize = tsize;
         this.w = w;
         this.h = h;
-        this.top = top;
-        this.left = left;
     }
 
     public registerSpriteSheet() {
@@ -46,7 +42,7 @@ export default class GroundDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
      */
-    public drawGroundTiles(state: any) {
+    public drawGroundTiles(container: Phaser.GameObjects.Container, state: any) {
         // center point based 
         var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
         var fieldTopY = (this.h - state.rows * this.tSize) / 2;
@@ -58,7 +54,9 @@ export default class GroundDisplayUtil {
             if(this.sprites.has(coord)) {
                 this.updateMapChar(this.sprites.get(coord)!, tile);               
             } else {
-                this.sprites.set(coord, this.drawMapChar(fieldLeftX + x * this.tSize, fieldTopY + y * this.tSize, tile, this.scene)!);
+                var sprite = this.drawMapChar(fieldLeftX + x * this.tSize, fieldTopY + y * this.tSize, tile, this.scene)!.setToTop();
+                this.sprites.set(coord, sprite);
+                container.add(sprite);
             }
         });
     }

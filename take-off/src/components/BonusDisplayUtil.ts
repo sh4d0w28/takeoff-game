@@ -52,7 +52,7 @@ export default class BonusDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
     */
-    public drawBonuses(state: any) 
+    public drawBonuses(container: Phaser.GameObjects.Container, state: any) 
     {
         // center point based 
         var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
@@ -75,6 +75,7 @@ export default class BonusDisplayUtil {
                 var x = fieldLeftX + bonusSpec.x * this.tSize;
                 var y = fieldTopY + bonusSpec.y * this.tSize; 
                 bonuses[id] = this.scene.add.sprite(x, y,BonusDisplayUtil.BONUS_SPRITESHEET,0).setDepth(3);
+                container.add(bonuses[id]);
                 bonuses[id].anims.play('bonus');
             }
         });
