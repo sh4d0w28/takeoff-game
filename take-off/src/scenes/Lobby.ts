@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
 import { containerOfNineSlice } from '../Utils';
-import { Client, RoomAvailable } from 'colyseus.js';
+import { Client, RoomAvailable } from '../colys/colyseus';
 
 
 class RoomRect {
@@ -135,7 +135,7 @@ export class Lobby extends Scene {
                 console.log(lobby_room);
                 lobby_room.onMessage("score", () => {});
                 lobby_room.onMessage("rooms", (rooms) => { console.log('on rooms'); this._rooms(rooms); } );
-                lobby_room.onMessage("+", ([roomId, room]) => {console.log('on +'); this.onAddRoom(roomId, room); });
+                lobby_room.onMessage("+", (e) => {let roomId = e[0]; let room = e[1]; console.log('on +'); this.onAddRoom(roomId, room); });
                 lobby_room.onMessage("-", (roomId) => { console.log('on -'); this.onRemoveRoom(roomId); });
                 lobby_room.onLeave(() => { console.log('on leave'); this._leave(); });
             });
@@ -213,7 +213,8 @@ export class Lobby extends Scene {
         }
         console.log(ids, this.data.values.takeoff_rooms, this.data.values.takeoff_rooms_graphics);
 
-        Object.entries(this.data.values.takeoff_rooms).forEach(([i,room]: any) => {
+        Object.entries(this.data.values.takeoff_rooms).forEach((e: any) => {
+            let room = e[1];
             ids.push(room.roomId);
             if(!this.data.values.takeoff_rooms_graphics[room.roomId]) {
                 this.data.values.takeoff_rooms_graphics[room.roomId] = new RoomRect(this, 20, 120, -1, room);

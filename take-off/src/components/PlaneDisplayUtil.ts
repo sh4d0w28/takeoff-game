@@ -65,7 +65,9 @@ export default class PlaneDisplayUtil {
         // for each plane:
         // either create a sprite object in memory, 
         // or update coordinates / states / speed / rotation 
-        state.planes.entries().forEach(([sessionId,planeSpec]:any)=>{
+        state.planes.entries().forEach((e:any)=>{
+            let sessionId = e[0];
+            let planeSpec = e[1];
 
             // create image on default position
             var planeSprite: Phaser.GameObjects.Sprite;

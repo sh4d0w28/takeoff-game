@@ -68,7 +68,9 @@ export default class BonusDisplayUtil {
         });
 
         // draw all bonuses from the state ( create if non-exists )
-        state.bonuses.entries().forEach(([id ,bonusSpec]:any)=>{ 
+        state.bonuses.entries().forEach((e:any)=>{ 
+            var id = e[0];
+            var bonusSpec = e[1];
             if(!bonuses[id]) {
                 var x = fieldLeftX + bonusSpec.x * this.tSize;
                 var y = fieldTopY + bonusSpec.y * this.tSize; 

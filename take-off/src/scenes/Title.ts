@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import { Client, Room, RoomAvailable } from 'colyseus.js';
+import { Client, Room, RoomAvailable } from '../colys/colyseus';
 import { containerOfNineSlice } from '../Utils';
 
 class Menu {

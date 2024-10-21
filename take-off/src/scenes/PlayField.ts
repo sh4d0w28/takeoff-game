@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import { Room } from 'colyseus.js';
+import { Room } from '../colys/colyseus';
 import PlaneDisplayUtil from '../components/PlaneDisplayUtil';
 import GroundDisplayUtil from '../components/GroundDisplayUtil';
 import BonusDisplayUtil from '../components/BonusDisplayUtil';

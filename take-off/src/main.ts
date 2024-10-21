@@ -2,7 +2,7 @@ import { Title } from './scenes/Title.ts';
 import { Lobby } from './scenes/Lobby.ts';
 import {PlayField} from './scenes/PlayField.ts';
 import { AUTO, Scale,Types } from 'phaser';
-import * as Colyseus from "colyseus.js";
+import { Client } from './colys/colyseus'
 import GlobalConfig from './GlobalConfig.ts';
 
 //  Find out more information about the Game Config at:
@@ -23,7 +23,7 @@ const config: Types.Core.GameConfig = {
 };
 
 /** create client instance to pass across all scenes */
-const client = new Colyseus.Client('ws://localhost:2567');
+const client = new Client('wss://edushm.com:2567');
 
 const globalConfig: GlobalConfig = {
     colyseus: client

@@ -52,7 +52,9 @@ export default class GroundDisplayUtil {
         var fieldTopY = (this.h - state.rows * this.tSize) / 2;
         
         state.mapSpecification.forEach((tile:string ,coord:string)=>{
-            const [x,y] = coord.split('.').map(v => parseInt(v));
+            let xy = coord.split('.').map(v => parseInt(v));
+            let x = xy[0];
+            let y = xy[1];
             if(this.sprites.has(coord)) {
                 this.updateMapChar(this.sprites.get(coord)!, tile);               
             } else {

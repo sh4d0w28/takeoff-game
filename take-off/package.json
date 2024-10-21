@@ -20,7 +20,6 @@
     "homepage": "https://github.com/phaserjs/template-esbuild-ts#readme",
     "license": "MIT",
     "dependencies": {
-        "colyseus.js": "^0.15.26",
         "phaser": "^3.85.2"
     },
     "devDependencies": {
