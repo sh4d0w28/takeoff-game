@@ -6,11 +6,11 @@ import FieldMapUtil from "../utils/FieldMapUtil";
 import { PlaneState } from "./PlaneState";
 import PlayerStartPointOption from "../classes/PlayerStartPointOption";
 import RandomStringUtil from "../utils/RandomUtil";
-import { PlaneStateEnum } from "../../../../common/Enums";
 import RandomUtil from "../utils/RandomUtil";
 import { BonusState } from "./BonusState";
 import { v4 as uuidv4 } from 'uuid';
 import PersistentStorage from "../../PersistentStorage";
+import { PlaneStateEnum } from "../common/Enums";
 
 export class AirFieldState extends Schema {
 
@@ -99,7 +99,6 @@ export class AirFieldState extends Schema {
                 var coords = FieldMapUtil.keyToXy(bonusxy);
                 var sessionId = this._planeKeyAt(coords.x, coords.y)
                 this.planes.get(sessionId).currentSpeed += bonus.points;                
-                console.log('bonus collected [' + bonusxy + "] by " + sessionId);
                 collected.push(bonusId);
             }
         });

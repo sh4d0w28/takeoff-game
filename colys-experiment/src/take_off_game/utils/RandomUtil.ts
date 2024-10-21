@@ -1,4 +1,4 @@
-import { PlaneColorEnum } from "../../../../common/Enums";
+import { PlaneColorEnum } from "../common/Enums";
 import { PlaneState } from "../schemas/PlaneState";
 import { PlayerState } from "../schemas/PlayerState";
 import { MapSchema } from "@colyseus/schema"

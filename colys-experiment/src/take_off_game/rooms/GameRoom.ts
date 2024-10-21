@@ -3,7 +3,8 @@ import {Delayed} from "@gamestdio/timer/lib/Delayed"
 import { AirFieldState } from "../schemas/AirFieldState";
 import { AirFieldStateOption } from "../classes/AirFieldStateOption";
 import { PlayerJoinOption } from "../classes/PlayerJoinOption"
-import { DirectionEnum } from "../../../../common/Enums";
+import { DirectionEnum } from "../common/Enums";
+import { GameMaps } from "../common/Maps";
 
 export class GameRoom extends Room<AirFieldState> {
     maxClients = 6;
@@ -12,11 +13,19 @@ export class GameRoom extends Room<AirFieldState> {
 
     onCreate (options: AirFieldStateOption) {
       this.autoDispose = false;
+
+      if(options.map_name && GameMaps.has(options.map_name)) {
+        var aMap = GameMaps.get(options.map_name)
+        options.map = aMap.map.join("");
+        options.width = aMap.map[0].length;
+        options.height = aMap.map.length;
+        options.startPoints = aMap.startPoints;
+      }
+
       this.setState(new AirFieldState(options));
       this.clock.start();
       
       this.onMessage("wasd", (client, message:string) => {
-        console.log("wasd received: " + message);
         switch(message.toLowerCase()) {
           case 'w':
             this.state.planes.get(client.sessionId).askToTurn(DirectionEnum.UP);

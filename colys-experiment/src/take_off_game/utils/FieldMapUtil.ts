@@ -1,4 +1,4 @@
-import { DirectionEnum } from "../../../../common/Enums";
+import { DirectionEnum } from "../common/Enums";
 
 export default abstract class FieldMapUtil {
 

@@ -1,6 +1,5 @@
 import { Scene } from 'phaser';
 import GlobalConfig from '../GlobalConfig';
-import { Map1 } from '../../../common/Maps';
 import { containerOfNineSlice } from '../Utils';
 import { Client, RoomAvailable } from 'colyseus.js';
 
@@ -170,12 +169,7 @@ export class Lobby extends Scene {
     /** send message to server to make an empty room to join */
     _createRoom(){
         var config:GlobalConfig = this.data.values.GlobalConfig;
-        config.room?.send("new", { 
-            width: Map1.width,
-            height: Map1.height,
-            map: Map1.map.join(""),
-            startPoints: Map1.startPoints
-        });
+        config.room?.send("new", {"map_name":"map_1"});
     }
     
     /** receive 'new room' from server */

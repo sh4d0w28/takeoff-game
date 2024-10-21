@@ -1,5 +1,5 @@
 import { Schema, type } from '@colyseus/schema'
-import { DirectionEnum, PlaneStateEnum } from '../../../../common/Enums';
+import { DirectionEnum, PlaneStateEnum } from '../common/Enums';
 import FieldMapUtil from '../utils/FieldMapUtil';
 
 export class PlaneState extends Schema {

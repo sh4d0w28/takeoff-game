@@ -15,5 +15,5 @@
   },
   "include": [
     "src"
-, "../common/Enums.ts"  ]
+, "src/take_off_game/common/Enums.ts"  ]
 }
