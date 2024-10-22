@@ -61,6 +61,18 @@ export default class GroundDisplayUtil {
         });
     }
 
+    public enableTakeOffs(state:any, isEnabled:boolean) {
+        state.mapSpecification.forEach((tile:string ,coord:string)=>{
+            if(this.sprites.has(coord) && tile == '*') {
+                if(isEnabled) {
+                    this.sprites.get(coord)?.setFrame(6);
+                } else {
+                    this.sprites.get(coord)?.setFrame(5);
+                }
+            }
+        });
+    }
+
     /**
      * update frame ( if map will be changed for any reason )
      * @param image - original image from list

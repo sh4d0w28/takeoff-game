@@ -237,7 +237,7 @@ export class Title extends Scene {
     _startSinglePlayer() {
         var client:Client = this.data.get(GlobalConfig.KEY).colyseus;
         client.joinOrCreate("takeoff_room", {
-            "map_name":"map_2"
+            "map_name":"map_3"
             //, externalId: ""
             //, displayName: ""
         }).then((room: Room) => {
@@ -246,6 +246,7 @@ export class Title extends Scene {
             this.scene.switch('Game', config);
         });
     }
+    
     _goToLobby() {
         var cfg: GlobalConfig = this.data.get(GlobalConfig.KEY);
         cfg.room?.leave(true);

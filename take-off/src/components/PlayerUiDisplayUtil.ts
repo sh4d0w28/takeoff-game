@@ -7,21 +7,9 @@ export default class PlayerUiDisplayUtil {
     readonly w:number;
     readonly h:number;
 
-    public static readonly SPEED_PRORGRESS_SPRITESHEET = 'speedProgressSpriteSheet';
-    public static readonly SPEED_PRORGRESS_SPRITEFILE = 'assets/score_display.bmp'; 
+    public static readonly PLANES_SPRITESHEET = 'planesSpriteSheet';
+    public static readonly PLANES_SPRITEFILE = 'assets/planesprite-anim.bmp'; 
     
-    public registerSpriteSheet() {
-        this.scene.load.spritesheet({
-            key: PlayerUiDisplayUtil.SPEED_PRORGRESS_SPRITESHEET,
-            url: PlayerUiDisplayUtil.SPEED_PRORGRESS_SPRITEFILE,
-            frameConfig: {
-                frameWidth: 4,
-                frameHeight: 7,
-                spacing: 1
-            }
-        });
-    }
-
     public constructor(s: Phaser.Scene, tsize :number, w:number, h:number) {
         this.scene = s;
         this.tSize = tsize;
@@ -29,8 +17,8 @@ export default class PlayerUiDisplayUtil {
         this.h = h;
 
         // keep score texts and icons
-        if(!this.scene.data.get('playerScores')) {
-            this.scene.data.set('playerScores', {});
+        if(!this.scene.data.get('gameScores')) {
+            this.scene.data.set('gameScores', {});
         }
     }
 
@@ -43,27 +31,9 @@ export default class PlayerUiDisplayUtil {
      * @param scene - current scene to draw onto 
      * @param state - current state recevied from Colyseus
      */
-    public drawGUI(state: any) {
+    public drawGUI(container: Phaser.GameObjects.Container, state: any) {
         // get current user session id
-        var sessionId = this.scene.data.get('GlobalConfig').room.sessionId;
-        // center point based 
-        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
-        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
-
-        this.scene.add.rectangle(
-            fieldLeftX - 30, 
-            fieldTopY  - 30, 
-            fieldLeftX + 30  + (state.columns * this.tSize) + 30,
-            fieldTopY  + 30 + (state.rows * this.tSize) + 30,
-            0x001100, 
-        ).setDepth(-1);
-
-        this.drawSpeedAndScore(fieldLeftX, fieldTopY, sessionId, state);
-        this.drawPlayersScores(fieldLeftX, fieldTopY + (state.rows * this.tSize), state)
-
-        for(var i = 0; i<10; i++) {
-            this.scene.data.set('speed_prog_'+i, this.scene.add.sprite(fieldLeftX-30 + i * 5, fieldTopY-30,'speedProgressSpriteSheet', 0).setDepth(4));
-        }
+        this.drawPlayersScores(0,0, state)
     }
 
     private drawPlayersScores(leftX: number, topY: number, state: any) {
