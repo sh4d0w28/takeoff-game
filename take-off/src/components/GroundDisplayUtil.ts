@@ -8,7 +8,7 @@ export default class GroundDisplayUtil {
     readonly h:number;
 
     private static readonly GROUND_TILE_SPRITESHEET = 'roadSpriteSheet';
-    public static readonly GROUND_TILE_SPRITEFILE = 'assets/roadnoise.png';
+    public static readonly GROUND_TILE_SPRITEFILE = '/assets/takeoff_game/roadnoise.png';
 
     readonly sprites:Map<String,Phaser.GameObjects.Image> = new Map();
 
@@ -57,6 +57,18 @@ export default class GroundDisplayUtil {
                 var sprite = this.drawMapChar(fieldLeftX + x * this.tSize, fieldTopY + y * this.tSize, tile, this.scene)!.setToTop();
                 this.sprites.set(coord, sprite);
                 container.add(sprite);
+            }
+        });
+    }
+
+    public enableTakeOffs(state:any, isEnabled:boolean) {
+        state.mapSpecification.forEach((tile:string ,coord:string)=>{
+            if(this.sprites.has(coord) && tile == '*') {
+                if(isEnabled) {
+                    this.sprites.get(coord)?.setFrame(6);
+                } else {
+                    this.sprites.get(coord)?.setFrame(5);
+                }
             }
         });
     }

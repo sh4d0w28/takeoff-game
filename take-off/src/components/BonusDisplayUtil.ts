@@ -7,7 +7,7 @@ export default class BonusDisplayUtil {
     readonly h:number;
 
     public static readonly BONUS_SPRITESHEET = 'bonusSpriteAnimated';
-    public static readonly BONUS_SPRITEFILE = 'assets/bonussprite-anim.bmp';
+    public static readonly BONUS_SPRITEFILE = '/assets/takeoff_game/bonussprite-anim.bmp';
     
     public constructor(s: Phaser.Scene, tsize :number, w:number, h:number) {
         this.scene = s;

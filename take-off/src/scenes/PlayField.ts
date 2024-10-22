@@ -11,9 +11,11 @@ export class PlayField extends Scene {
 
     private rectHeader:Phaser.GameObjects.NineSlice;
     private rectGameField:Phaser.GameObjects.NineSlice;
+    private rectGameStat:Phaser.GameObjects.NineSlice;
 
     private cntrHeader: Phaser.GameObjects.Container;
     private cntrGameField: Phaser.GameObjects.Container;
+    private cntrGameStat:Phaser.GameObjects.Container;
 
     readonly tsize = 32
     readonly w = 800;
@@ -31,21 +33,21 @@ export class PlayField extends Scene {
     preload() {
         this.load.image({
             key: "bgImage",
-            url: 'assets/images/bg.png'
+            url: '/assets/takeoff_game/images/bg.png'
         });
         this.load.image({
             key: "rctPanel",
-            url: "assets/images/panel_bg.png"
+            url: "/assets/takeoff_game/images/panel_bg.png"
         });
         this.load.image({
             key: "fieldBg",
-            url: 'assets/field_bg.png'
+            url: '/assets/takeoff_game/field_bg.png'
         });
         
          
-        this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, 760, 480);
-        this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, 760, 480);
-        this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, 760, 480);
+        this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, 512, 480);
+        this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, 512, 480);
+        this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, 512, 480);
         // this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
 
         this.groundDisplayUtil.registerSpriteSheet();
@@ -71,13 +73,18 @@ export class PlayField extends Scene {
         this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
         var titleText = this.add.text(20,15,"=============== " + cfg.room?.id + " ===============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
 
-        this.rectGameField = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+        this.rectGameField = this.add.nineslice(20, 100, 'rctPanel', undefined, 512, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
 
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
 
         var playfield_bg = this.add.image(0,0,'fieldBg').setOrigin(0);
         this.cntrGameField = this.add.container(this.rectGameField.x, this.rectGameField.y, playfield_bg);
 
+
+        this.rectGameStat = this.add.nineslice(552, 100, 'rctPanel', undefined, 228, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+        this.cntrGameStat = containerOfNineSlice(this, this.rectGameStat, []);
+
+        
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();
 
@@ -116,9 +123,20 @@ export class PlayField extends Scene {
             return;
         }
         var state = this.data.get("state");
+
         this.groundDisplayUtil.drawGroundTiles(this.cntrGameField, state);
+        
+        var cfg:GlobalConfig = this.data.get(GlobalConfig.KEY);
+
+        var plane = state.planes.get(cfg.room?.sessionId);
+        if(plane.currentSpeed >= plane.takeOffSpeed) {
+            this.groundDisplayUtil.enableTakeOffs(state, true);
+        } else {
+            this.groundDisplayUtil.enableTakeOffs(state, false);
+        }
         this.bonusDisplayUtil.drawBonuses(this.cntrGameField, state);
         this.planeDisplayUtil.drawPlanes(this.cntrGameField, state);
-        //this.playerUiDisplayUtil.drawGUI(state);
+        
+        this.playerUiDisplayUtil.drawGUI(this.rectGameStat, state);
     }
 }

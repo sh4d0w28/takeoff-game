@@ -104,11 +104,11 @@ export class Lobby extends Scene {
     preload() {
         this.load.image({
             key: "bgImage",
-            url: 'assets/images/bg.png'
+            url: '/assets/takeoff_game/takeoff_game/images/bg.png'
         });
         this.load.image({
             key: "rctPanel",
-            url: "assets/images/panel_bg.png"
+            url: "/assets/takeoff_game/images/panel_bg.png"
         })
     }
 

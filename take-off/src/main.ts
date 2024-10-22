@@ -23,7 +23,7 @@ const config: Types.Core.GameConfig = {
 };
 
 /** create client instance to pass across all scenes */
-const client = new Client('ws://localhost:2567');
+const client = new Client('wss://colyseus.edushm.com');
 
 const globalConfig: GlobalConfig = {
     colyseus: client

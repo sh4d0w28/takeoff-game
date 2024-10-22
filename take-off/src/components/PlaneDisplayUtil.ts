@@ -6,7 +6,7 @@ export default class PlaneDisplayUtil {
     readonly h:number;
 
     public static readonly PLANES_SPRITESHEET = 'planesSpriteSheet';
-    public static readonly PLANES_SPRITEFILE = 'assets/planesprite-anim.bmp'; 
+    public static readonly PLANES_SPRITEFILE = '/assets/takeoff_game/planesprite-anim.bmp'; 
     
     public constructor(s: Phaser.Scene, tsize :number, w:number, h:number) {
         this.scene = s;

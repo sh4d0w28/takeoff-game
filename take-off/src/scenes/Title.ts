@@ -76,11 +76,11 @@ export class Title extends Scene {
     preload() {
         this.load.image({
             key: "bgImage",
-            url: 'assets/images/bg.png'
+            url: '/assets/takeoff_game/images/bg.png'
         });
         this.load.image({
             key: "rctPanel",
-            url: "assets/images/panel_bg.png"
+            url: "/assets/takeoff_game/images/panel_bg.png"
         })
     }
     
@@ -237,7 +237,7 @@ export class Title extends Scene {
     _startSinglePlayer() {
         var client:Client = this.data.get(GlobalConfig.KEY).colyseus;
         client.joinOrCreate("takeoff_room", {
-            "map_name":"map_2"
+            "map_name":"map_3"
             //, externalId: ""
             //, displayName: ""
         }).then((room: Room) => {
@@ -246,6 +246,7 @@ export class Title extends Scene {
             this.scene.switch('Game', config);
         });
     }
+    
     _goToLobby() {
         var cfg: GlobalConfig = this.data.get(GlobalConfig.KEY);
         cfg.room?.leave(true);
