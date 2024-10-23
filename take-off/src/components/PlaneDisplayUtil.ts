@@ -74,6 +74,7 @@ export default class PlaneDisplayUtil {
 
             if (!planes[sessionId]) {
                 planeSprite = this.scene.add.sprite(0,0,PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color);
+                planeSprite.setDataEnabled();
                 planes[sessionId] = planeSprite;
                 container.add(planeSprite);
             } else {

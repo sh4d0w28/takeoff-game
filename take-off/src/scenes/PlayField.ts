@@ -136,6 +136,6 @@ export class PlayField extends Scene {
         }
         this.bonusDisplayUtil.drawBonuses(this.cntrGameField, state);
         this.planeDisplayUtil.drawPlanes(this.cntrGameField, state);
-        this.playerUiDisplayUtil.drawGUI(this.cntrGameField, state);
+        this.playerUiDisplayUtil.drawGUI(this.cntrGameStat, state);        
     }
 }
