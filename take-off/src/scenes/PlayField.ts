@@ -48,15 +48,15 @@ export class PlayField extends Scene {
         this.planeDisplayUtil = new PlaneDisplayUtil(this, this.tsize, 512, 480);
         this.groundDisplayUtil = new GroundDisplayUtil(this, this.tsize, 512, 480);
         this.bonusDisplayUtil = new BonusDisplayUtil(this, this.tsize, 512, 480);
-        // this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, this.w, this.h);
+        this.playerUiDisplayUtil = new PlayerUiDisplayUtil(this, this.tsize, 228, 480);
 
         this.groundDisplayUtil.registerSpriteSheet();
         this.planeDisplayUtil.registerSpriteSheet();
         this.bonusDisplayUtil.registerSpriteSheet();
-        // this.playerUiDisplayUtil.registerSpriteSheet();
     }
 
     init(data: GlobalConfig) {
+        this.data.set('loaded', false);
         this.data.set('GlobalConfig', data);
     }
 
@@ -136,7 +136,6 @@ export class PlayField extends Scene {
         }
         this.bonusDisplayUtil.drawBonuses(this.cntrGameField, state);
         this.planeDisplayUtil.drawPlanes(this.cntrGameField, state);
-        
-        this.playerUiDisplayUtil.drawGUI(this.rectGameStat, state);
+        this.playerUiDisplayUtil.drawGUI(this.cntrGameField, state);
     }
 }

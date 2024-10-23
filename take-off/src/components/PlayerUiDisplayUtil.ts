@@ -17,8 +17,8 @@ export default class PlayerUiDisplayUtil {
         this.h = h;
 
         // keep score texts and icons
-        if(!this.scene.data.get('gameScores')) {
-            this.scene.data.set('gameScores', {});
+        if(!this.scene.data.get('playerScores')) {
+            this.scene.data.set('playerScores', {});
         }
     }
 
@@ -33,10 +33,10 @@ export default class PlayerUiDisplayUtil {
      */
     public drawGUI(container: Phaser.GameObjects.Container, state: any) {
         // get current user session id
-        this.drawPlayersScores(0,0, state)
+        this.drawPlayersScores(container, 0,0, state)
     }
 
-    private drawPlayersScores(leftX: number, topY: number, state: any) {
+    private drawPlayersScores(container: Phaser.GameObjects.Container, leftX: number, topY: number, state: any) {
         var i = 0;
         state.players.entries().forEach(([sessionId,playerSpec]:any)=>{
             var planeSpec = state.planes.get(sessionId)
@@ -52,6 +52,7 @@ export default class PlayerUiDisplayUtil {
                     sprite :planeScoreSprite,
                     text :planeScoreText
                 }
+                container.add([planeScoreSprite, planeScoreText]);
             } else {
                 planeScoreSprite = this.scene.data.get('playerScores')[sessionId].sprite;
                 planeScoreText = this.scene.data.get('playerScores')[sessionId].text
