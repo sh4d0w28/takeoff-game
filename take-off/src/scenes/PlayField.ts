@@ -13,9 +13,13 @@ export class PlayField extends Scene {
     private rectGameField:Phaser.GameObjects.NineSlice;
     private rectGameStat:Phaser.GameObjects.NineSlice;
 
+    private rectGameOver:Phaser.GameObjects.NineSlice;
+
     private cntrHeader: Phaser.GameObjects.Container;
     private cntrGameField: Phaser.GameObjects.Container;
     private cntrGameStat:Phaser.GameObjects.Container;
+
+    private cntrGameOver:Phaser.GameObjects.Container;
 
     readonly tsize = 32
     readonly w = 800;
@@ -84,7 +88,16 @@ export class PlayField extends Scene {
         this.rectGameStat = this.add.nineslice(552, 100, 'rctPanel', undefined, 228, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
         this.cntrGameStat = containerOfNineSlice(this, this.rectGameStat, []);
 
-        
+        // GAME OVER SCREEN
+        this.rectGameOver = this.add.nineslice(200,200, 'rctPanel', undefined, 400,200, 20,20,20,20).setOrigin(0).setDepth(20).setAlpha(0);
+        var gameOverText1 = this.add.text(100,15,"GAME OVER", { fontFamily:"arcadepi", fontSize:30 }).setOrigin(0, 0);
+        var gameOverText2 = this.add.text(20,45,"You got X points", { fontFamily:"arcadepi", fontSize:30 });
+        var gameOverYes = this.add.text(20,75,"Yes", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
+        var gameOverNo = this.add.text(100,75,"No", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
+    
+        this.cntrGameOver = containerOfNineSlice(this, this.rectGameOver, [gameOverText1, gameOverText2, gameOverYes, gameOverNo]).setAlpha(0);
+        // END GAMEOVER
+
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();
 
@@ -105,6 +118,8 @@ export class PlayField extends Scene {
                 case 'LOST':
                     // TODO : show GO screen
                     console.log("YOU LOSST!");
+                    this.cntrGameOver.setAlpha(1);
+                    this.rectGameOver.setAlpha(1);
                     break;
                 default:
                     break;

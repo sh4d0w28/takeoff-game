@@ -45,8 +45,12 @@ export default class PlayerUiDisplayUtil {
             var planeScoreText: Phaser.GameObjects.Text;
 
             if(!this.scene.data.get('playerScores')[sessionId]) {
-                planeScoreSprite = this.scene.add.sprite(leftX, 20 + 10 + 35 * i, PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color).setDepth(2); 
-                planeScoreText = this.scene.add.text(leftX + 35, 20 + 5 + 35 * i, playerSpec.displayedName + " : " + playerSpec.score).setDepth(2);
+                planeScoreSprite = this.scene.add.sprite(35, 30 + 10 + 35 * i, PlaneDisplayUtil.PLANES_SPRITESHEET, planeSpec.color).setDepth(2); 
+                planeScoreText = this.scene.add.text(
+                    60, 30 + 5 + 35 * i, 
+                    playerSpec.displayedName + " : " + playerSpec.score,
+                    { fontFamily:"arcadepi", fontSize:10}
+                ).setDepth(2);
                 i++;
                 this.scene.data.get('playerScores')[sessionId] = {
                     sprite :planeScoreSprite,

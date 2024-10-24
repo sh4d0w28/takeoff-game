@@ -33,16 +33,20 @@ export default class PlaneDisplayUtil {
     }
 
     public registerAnimation() {     
-        this.registerAnim('planeAnim1', [0, 6,12,18]);
-        this.registerAnim('planeAnim2', [1, 7,13,19]);
-        this.registerAnim('planeAnim3', [2, 8,14,20]);
-        this.registerAnim('planeAnim4', [3, 9,15,21]);
-        this.registerAnim('planeAnim5', [4,10,16,22]);
-        this.registerAnim('planeAnim6', [5,11,17,23]);
+        this.registerAnim('planeAnim0', [0, 6,12,18]);
+        this.registerAnim('planeAnim1', [1, 7,13,19]);
+        this.registerAnim('planeAnim2', [2, 8,14,20]);
+        this.registerAnim('planeAnim3', [3, 9,15,21]);
+        this.registerAnim('planeAnim4', [4,10,16,22]);
+        this.registerAnim('planeAnim5', [5,11,17,23]);
     }
     
     private registerAnim(key: string, frames: number[] ) {
-        this.scene.anims.create({ key: key, frames: this.scene.anims.generateFrameNumbers(PlaneDisplayUtil.PLANES_SPRITESHEET, {frames: frames}), repeat: 1, frameRate: 4});
+        this.scene.anims.create({ key: key, 
+            frames: this.scene.anims.generateFrameNumbers(PlaneDisplayUtil.PLANES_SPRITESHEET, {frames: frames}), 
+            repeat: 0, 
+            frameRate: 10
+        });
     }
 
     /**
@@ -90,8 +94,8 @@ export default class PlaneDisplayUtil {
             
             // if plane is dead, play dead animation, set the state to avoid repeatable triggers
             if (planeSpec.state == 'dead'.toUpperCase()) {
-                if(!planeSprite.data.has('dead')) {
-                    planeSprite.data.set('dead', true);
+                if(!planeSprite.getData('dead')) {
+                    planeSprite.setData('dead', true);
                     planeSprite.anims.play('planeAnim' + planeSpec.color);
                 }
             }
