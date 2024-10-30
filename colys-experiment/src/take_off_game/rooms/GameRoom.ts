@@ -9,11 +9,14 @@ import { GameMaps } from "../common/Maps";
 export class GameRoom extends Room<AirFieldState> {
     maxClients = 6;
     
+    /** timer to update state ( will update each 100 ms ) */
     public delayedInterval!: Delayed;
 
     onCreate (options: AirFieldStateOption) {
+      /** keep room even without clients */
       this.autoDispose = false;
 
+      /** if we receive key of map in map_name, create map using that specification */
       if(options.map_name && GameMaps.has(options.map_name)) {
         var aMap = GameMaps.get(options.map_name)
         options.map = aMap.map.join("");
@@ -22,9 +25,11 @@ export class GameRoom extends Room<AirFieldState> {
         options.startPoints = aMap.startPoints;
       }
 
+      /** init state and start update loop */
       this.setState(new AirFieldState(options));
       this.clock.start();
-      
+
+      /** set client control button handler */
       this.onMessage("wasd", (client, message:string) => {
         switch(message.toLowerCase()) {
           case 'w':
@@ -42,16 +47,19 @@ export class GameRoom extends Room<AirFieldState> {
         }
       });
   
+      /** declare event on trigger  */
       this.delayedInterval = this.clock.setInterval(() => {
         this.state.advance(this);
       }, 100);
     }
   
+    /** add player on join */
     onJoin (client: Client, options: PlayerJoinOption) {
       console.log('[GameRoom]', client.sessionId, "joined!");
       this.state.addPlayer(client.sessionId, options.externalId, options.displayName);
     }
   
+    /** remove player on leave, destroy room in the only player */
     onLeave (client: Client, consented: boolean) {
       console.log('[GameRoom]',client.sessionId, "left!");
       if(this.clients.length == 0) {
@@ -60,6 +68,7 @@ export class GameRoom extends Room<AirFieldState> {
       this.state.removePlayer(client.sessionId);
     }
   
+    /** planeholder ( just log ) */
     onDispose() {
       console.log('[GameRoom]',"room", this.roomId, "disposing...");
     }

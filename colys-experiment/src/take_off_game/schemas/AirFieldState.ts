@@ -22,6 +22,8 @@ export class AirFieldState extends Schema {
     @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
     @type({ map: BonusState }) bonuses = new MapSchema<BonusState>();
 
+    @type("number") delaySec: number;
+
     startPoints: PlayerStartPointOption[]
     persistentStorage: PersistentStorage;
 

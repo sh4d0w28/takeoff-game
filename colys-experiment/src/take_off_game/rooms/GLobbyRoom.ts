@@ -12,11 +12,12 @@ export class GLobbyRoom extends LobbyRoom {
         this.storage = new PersistentStorage();
         this.clock.start();
 
+        /** create empty room */
         this.onMessage("new", (client, message) => {
             matchMaker.createRoom("takeoff_room", message);
         });
 
-        
+        /** loop to broadcast highscore */
         this.delayedInterval = this.clock.setInterval(() => {
             this.storage.listHighScores().then(data => {
                 this.broadcast('score', data);                 
