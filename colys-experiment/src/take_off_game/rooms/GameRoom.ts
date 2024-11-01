@@ -48,7 +48,9 @@ export class GameRoom extends Room<AirFieldState> {
       });
   
       this.onMessage("restart", (client, message)=>{
-        console.log('PSTATE' , this.state.planes.get(client.sessionId).state);
+        if (this.state.planes.get(client.sessionId).state == 'DEAD') {
+          this.state.reInitPlayer(client.sessionId);
+        }
       });
 
       /** declare event on trigger  */

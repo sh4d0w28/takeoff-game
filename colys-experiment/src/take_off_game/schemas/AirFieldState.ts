@@ -67,6 +67,19 @@ export class AirFieldState extends Schema {
         ));
     }
 
+    reInitPlayer(sessionId: string) {
+        const sp = this.startPoints[0];
+        this.players.get(sessionId).score = 0;
+        this.planes.set(sessionId, new PlaneState(
+            sp.x,
+            sp.y,
+            sp.direction,
+            RandomUtil.getRandomInt(8, 10),
+            this.planes.get(sessionId).color
+        ));
+
+    }
+
     // player quit. Remove him from the list and all his assets
     removePlayer(sessionId: string) {
         this.players.delete(sessionId);
