@@ -117,8 +117,8 @@ export class Lobby extends Scene {
         /** draw basic figures */
         this.add.image(0,0, 'bgImage').setOrigin(0);
         
-        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
-        this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', 0, 760, 60, 20, 20,20,20).setOrigin(0);
+        this.rectMain = this.add.nineslice(20, 100, 'rctPanel', 0, 760, 480, 20, 20,20,20).setOrigin(0);
         
         var titleText = this.add.text(20,15,"=============== LOBBY ===============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);

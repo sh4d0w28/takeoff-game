@@ -61,8 +61,8 @@ export default class PlaneDisplayUtil {
     public drawPlanes(container: Phaser.GameObjects.Container, state: any) 
     {
         // center point based 
-        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
-        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
+        var fieldLeftX = 14 + (this.w - state.columns * this.tSize) / 2; 
+        var fieldTopY = 14 + (this.h - state.rows * this.tSize) / 2;
 
         let planes = this.scene.data.get('planes');
         

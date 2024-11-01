@@ -55,8 +55,8 @@ export default class BonusDisplayUtil {
     public drawBonuses(container: Phaser.GameObjects.Container, state: any) 
     {
         // center point based 
-        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
-        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
+        var fieldLeftX = 14 + (this.w - state.columns * this.tSize) / 2; 
+        var fieldTopY = 14 + (this.h - state.rows * this.tSize) / 2;
 
         // prepare bonuses to store sprites
         var bonuses = this.scene.data.get('bonuses')

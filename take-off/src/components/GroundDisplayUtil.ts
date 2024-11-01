@@ -44,8 +44,8 @@ export default class GroundDisplayUtil {
      */
     public drawGroundTiles(container: Phaser.GameObjects.Container, state: any) {
         // center point based 
-        var fieldLeftX = (this.w - state.columns * this.tSize) / 2; 
-        var fieldTopY = (this.h - state.rows * this.tSize) / 2;
+        var fieldLeftX = 14 + (this.w - state.columns * this.tSize) / 2; 
+        var fieldTopY = 14 + (this.h - state.rows * this.tSize) / 2;
         
         state.mapSpecification.forEach((tile:string ,coord:string)=>{
             let xy = coord.split('.').map(v => parseInt(v));

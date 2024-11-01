@@ -90,20 +90,19 @@ export class Title extends Scene {
         this.add.image(0,0, 'bgImage').setOrigin(0);
         
         // rectangles
-        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', undefined, 760, 60, 20, 20,20,20).setOrigin(0).setDepth(1);
+        this.rectHeader = this.add.nineslice(20, 20, 'rctPanel', 0, 760, 60, 20, 20,20,20).setOrigin(0);
         
         if(data.prepareFromScene2ToScene1) {
-            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 760, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', 0, 760, 480, 20, 20,20,20).setOrigin(0);
         } else {
-            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', undefined, 512, 480, 20, 20,20,20).setOrigin(0).setDepth(1);    
+            this.rectMain = this.add.nineslice(20, 100, 'rctPanel', 0, 512, 480, 20, 20,20,20).setOrigin(0);    
         }
         
-        this.rectRight = this.add.nineslice(552, 100, 'rctPanel', undefined, 228, 480, 20, 20,20,20).setOrigin(0).setDepth(1);
+        this.rectRight = this.add.nineslice(552, 100, 'rctPanel', 0, 228, 480, 20, 20,20,20).setOrigin(0);
 
         var titleText = this.add.text(20,15,"============= MAIN MENU =============", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' });
 
         /** draw menu ( single player / multiplayer ) */
-        
         let mainMenu:Menu = new Menu(this);
         mainMenu.add("Start SinglePlayer", () => { this._startSinglePlayer() });
         mainMenu.add("Go To Lobby", () => { this._goToLobby() });
@@ -111,8 +110,8 @@ export class Title extends Scene {
         var menuContainer = this.add.container(256,380, mainMenu.menulist);
 
 
-        var scorepoints = this.add.text(20,20, "High Scores",{ fontFamily:"arcadepi", fontSize:20, color: '#0f0' }).setDepth(2);
-        this.highScores = this.add.text(20,50, "",{ fontFamily:"arcadepi", fontSize:15, color: '#0f0' }).setDepth(2)
+        var scorepoints = this.add.text(20,20, "High Scores",{ fontFamily:"arcadepi", fontSize:20, color: '#0f0' });
+        this.highScores = this.add.text(20,50, "",{ fontFamily:"arcadepi", fontSize:15, color: '#0f0' });
 
         // containers
         this.cntrHeader = containerOfNineSlice(this, this.rectHeader, [titleText]);
