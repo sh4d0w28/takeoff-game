@@ -47,6 +47,10 @@ export class GameRoom extends Room<AirFieldState> {
         }
       });
   
+      this.onMessage("restart", (client, message)=>{
+        console.log('PSTATE' , this.state.planes.get(client.sessionId).state);
+      });
+
       /** declare event on trigger  */
       this.delayedInterval = this.clock.setInterval(() => {
         this.state.advance(this);

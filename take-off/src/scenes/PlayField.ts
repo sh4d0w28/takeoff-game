@@ -77,6 +77,9 @@ export class PlayField extends Scene {
 
         var self = this;
 
+        // event processing
+        var room: Room = this.data.get("GlobalConfig").room;
+
         var cfg:GlobalConfig = this.data.get(GlobalConfig.KEY);
 
         this.add.image(0,0, 'bgImage').setOrigin(0);
@@ -100,7 +103,7 @@ export class PlayField extends Scene {
         var gameOverText1 = this.add.text(200,35,"GAME OVER", { fontFamily:"arcadepi", fontSize:30 }).setOrigin(0.5);
         this.gameOverText2 = this.add.text(200,65,"You got X points", { fontFamily:"arcadepi", fontSize:30 }).setOrigin(0.5);
 
-        this.gameOverYes = this.add.text(200, 120,"Continue", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' }).setOrigin(0.5).setInteractive().on('pointerdown', () => {});
+        this.gameOverYes = this.add.text(200, 120,"Continue", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' }).setOrigin(0.5).setInteractive().on('pointerdown', () => { room.send('restart'); });
         this.gameOverNo = this.add.text(200, 160,"To Lobby", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' }).setOrigin(0.5).setInteractive().on('pointerdown', () => {});    
 
         this.cntrGameOver = containerOfNineSlice(this, this.rectGameOver, [gameOverText1, this.gameOverText2, this.gameOverYes, this.gameOverNo]).setAlpha(0).setDepth(20);
@@ -108,9 +111,6 @@ export class PlayField extends Scene {
 
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();
-
-        // event processing
-        var room: Room = this.data.get("GlobalConfig").room;
 
         // register key events 
         var controlBtns = this.input.keyboard?.addKeys('W,S,A,D', true, false);
