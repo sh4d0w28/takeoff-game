@@ -145,7 +145,6 @@ export class Title extends Scene {
     }
 
     updateScore(data: any) {
-        console.info('update score with ' + data)
         this.highScores.text = "";
         for (let i = 0; i < data.length; i++) {
             const element = data[i];

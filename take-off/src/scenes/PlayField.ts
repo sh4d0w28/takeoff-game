@@ -71,6 +71,52 @@ export class PlayField extends Scene {
         this.data.set('GlobalConfig', data);
     }
 
+    gameoverscreen() {
+        this.rectGameOver = this.add.nineslice(200,200, 'rctPanel', 0, 400,200, 14, 14, 14, 14).setOrigin(0).setVisible(false);
+        var gameOverText1 = this.add.text(200,35,"GAME OVER", { fontFamily:"arcadepi", fontSize:30 }).setOrigin(0.5);
+        this.gameOverText2 = this.add.text(200,65,"You got X points", { fontFamily:"arcadepi", fontSize:30 }).setOrigin(0.5);
+
+        this.gameOverYes = this.add.text(200, 120,"Continue", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' }).setOrigin(0.5).setInteractive().on('pointerdown', () => { this.restartGame(); });
+        this.gameOverNo = this.add.text(200, 160,"To Lobby", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' }).setOrigin(0.5).setInteractive().on('pointerdown', () => { this.goLobby(); });    
+
+        this.cntrGameOver = containerOfNineSlice(this, this.rectGameOver, [gameOverText1, this.gameOverText2, this.gameOverYes, this.gameOverNo]).setVisible(false).setDepth(20);
+    }
+    
+    restartGame() {
+        this.cntrGameOver.setVisible(false);
+        this.rectGameOver.setVisible(false);
+
+        var room: Room = this.data.get("GlobalConfig").room;
+        room.send('restart');
+        var plane = this.data.get('planes')[room.sessionId];
+        plane.anims.setProgress(0);
+    }
+
+    goLobby() {
+        return;
+    }
+
+    showGameOverModal() {
+        this.cntrGameOver.setVisible(true);
+        this.rectGameOver.setVisible(true);
+        this.gameOverYes.setAlpha(1);
+        this.gameOverNo.setAlpha(1);
+        this.tweens.add({ targets: this.gameOverYes, alpha: 0.5, duration: 300, repeat: -1, yoyo: true }).play();
+        this.tweens.add({ targets: this.gameOverNo, alpha: 0.5, duration: 300, repeat: -1, yoyo: true }).play().pause();
+    }
+
+
+
+    selectCurrentItem() {
+        if (this.data.get('lost')) {
+            if(this.selectedGameOverItem == 1) {
+                this.goLobby()
+            } else {
+                this.restartGame();
+            }
+        }
+    }
+
     // 760 columns  
     // 480 rows 
     create() {
@@ -98,21 +144,14 @@ export class PlayField extends Scene {
         this.rectGameStat = this.add.nineslice(552, 100, 'rctPanel', 0, 228, 480, 14, 14, 14, 14).setOrigin(0);
         this.cntrGameStat = containerOfNineSlice(this, this.rectGameStat, []);
 
-        // GAME OVER SCREEN
-        this.rectGameOver = this.add.nineslice(200,200, 'rctPanel', 0, 400,200, 14, 14, 14, 14).setOrigin(0).setAlpha(0);
-        var gameOverText1 = this.add.text(200,35,"GAME OVER", { fontFamily:"arcadepi", fontSize:30 }).setOrigin(0.5);
-        this.gameOverText2 = this.add.text(200,65,"You got X points", { fontFamily:"arcadepi", fontSize:30 }).setOrigin(0.5);
-
-        this.gameOverYes = this.add.text(200, 120,"Continue", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' }).setOrigin(0.5).setInteractive().on('pointerdown', () => { room.send('restart'); });
-        this.gameOverNo = this.add.text(200, 160,"To Lobby", { fontFamily:"arcadepi", fontSize:30, color: '#00f900' }).setOrigin(0.5).setInteractive().on('pointerdown', () => {});    
-
-        this.cntrGameOver = containerOfNineSlice(this, this.rectGameOver, [gameOverText1, this.gameOverText2, this.gameOverYes, this.gameOverNo]).setAlpha(0).setDepth(20);
-        // END GAMEOVER
+        this.gameoverscreen();
 
         this.planeDisplayUtil.registerAnimation();
         this.bonusDisplayUtil.registerAnimation();
 
         // register key events 
+        this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).addListener('down', function() { self.selectCurrentItem(); });
+
         var controlBtns = this.input.keyboard?.addKeys('W,S,A,D', true, false);
         if(controlBtns) {
             controlBtns.W.addListener('down', () => {
@@ -154,14 +193,9 @@ export class PlayField extends Scene {
             switch(message) {
                 case 'LOST':
                     var mycurrentScore = this.data.get('state').players.get(room.sessionId).score;
-                    
                     this.data.set('lost', true);
-
                     this.gameOverText2.setText("You got " + mycurrentScore + " points")
-                    this.cntrGameOver.setAlpha(1);
-                    this.rectGameOver.setAlpha(1);
-                    this.tweens.add({ targets: this.gameOverYes, alpha: 0.5, duration: 300, repeat: -1, yoyo: true }).play().pause();
-                    this.tweens.add({ targets: this.gameOverNo, alpha: 0.5, duration: 300, repeat: -1, yoyo: true }).play().pause();
+                    this.showGameOverModal();
                     break;
                 default:
                     break;
